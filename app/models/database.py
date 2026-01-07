@@ -1,10 +1,10 @@
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, Numeric
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
-
-db = SQLAlchemy()
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.extensions import db
 
 # =============================================================================
 # =======================   Modello Categoria  ================================
@@ -15,7 +15,7 @@ class Categoria(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     nome: Mapped[str] = mapped_column(String(200), nullable=False)
-    descrizione: Mapped[str] = mapped_column(Text, nullable=True, default="Nessuna descrizione per questa categoria.")
+    descrizione: Mapped[str] = mapped_column(Text, default="Nessuna descrizione per questa categoria.")
     attiva: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # relazione con la tabella prodotti
@@ -35,9 +35,9 @@ class Prodotto(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     codice: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
     nome: Mapped[str] = mapped_column(String(200), nullable=False)
-    descrizione: Mapped[str] = mapped_column(Text, nullable=True, default="Nessuna descrizione per questo prodotto.")
+    descrizione: Mapped[str] = mapped_column(Text, default="Nessuna descrizione per questo prodotto.")
     prezzo: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
-    quantita: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    quantita: Mapped[int] = mapped_column(Integer, default=0)
     attivo: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # relazione con la tabella categorie
@@ -93,3 +93,47 @@ class FornitoreProdotto(db.Model):
     def __str__(self):
         return f"{self.fornitore} - {self.prodotto}"
     
+
+
+# =============================================================================
+# ==========================   Modello User   =================================
+# =============================================================================
+class User(db.Model, UserMixin):
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(25), nullable=False)
+    email: Mapped[str] = mapped_column(String(120), nullable=False, unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    ruolo: Mapped[str] = mapped_column(String(20), default="CLIENTE")
+    verificato: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    @property
+    def is_admin(self) -> bool:
+        return self.ruolo == "ADMIN"
+
+    def __str__(self):
+        return f"{self.username} - {self.email} - {self.ruolo} - {'Verificato' if self.verificato else 'NonVerificato'}"
+    
+
+
+# =============================================================================
+# =======================   Modello IP Bloccati   =============================
+# =============================================================================
+class IpBloccati(db.Model):
+
+    __tablename__ = "ip_bloccati"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ip: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
+    blocked_until: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
+
+    def is_blocked(self):
+        return datetime.now(timezone.utc) < self.blocked_until

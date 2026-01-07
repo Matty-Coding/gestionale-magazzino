@@ -24,40 +24,26 @@
 
 </head>
 
-<body>
+<body class="bg-slate-800 text-white">
 
+  <!-- header per semantica e SEO -->
   <header>
-    <nav>
-      <div>
-        <a href="#">Logo</a>
-      </div>
+    <!-- import della componente esterna per la nav bar condivisa -->
+    {% include '/components/navbar.html' %}
 
-      <ul>
-        <li><a href="#">Contatti</a></li>
-        <li><a href="#">Chi Siamo</a></li>
-        <li><a href="#">Accedi</a></li>
-        <li><a href="#"></a></li>
-      </ul>
-    </nav>
-
+    <!-- struttura hero section -->
     <h1>{% block hero %}{% endblock %}</h1>
     <h2>{% block subtitle %}{% endblock %}</h2>
   </header>
 
+  <!-- main per contenuto core della pagina -->
   <main>
     <aside>{% block aside %}{% endblock %}</aside>
     <section>{% block main %}{% endblock %}</section>
   </main>
 
-  <footer>
-    <nav>
-      <ul>
-        <li><a href="#">link copyright</a></li>
-        <li><a href="#">link copyright</a></li>
-        <li><a href="#">link copyright</a></li>
-      </ul>
-    </nav>
-  </footer>
+  <!-- import del componente per il footer condiviso -->
+  {% include '/components/footer.html' %}
 </body>
 
 </html>

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Temporaneamente bloccato
+{% endblock %}
+
+{% block hero %}
+  Sei stato temporaneamente bloccato!
+{% endblock %}
+
+{% set secondi = timer %}
+
+{% block subtitle %}
+  Riprova tra <span id="timer">{{ seconds }}</span> secondi. 
+{% endblock %}
+
+{% block content %}
+  
+<script>
+  let remaining = secondi;
+
+  setInterval(() => {
+    if (remaining <= 0) return;
+    remaining--;
+    document.getElementById("timer").innerText = remaining;
+  }, 1000);
+</script>
+
+{% endblock %}
+  
