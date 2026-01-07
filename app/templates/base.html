@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- meta tags for SEO -->
+  <meta name="author" content="Matty-Coding">
+  <meta name="description"
+    content="Gestionale magazzino Full-Stack Project, backend Flask e frontend Tailwind e JavaScript Vanilla">
+
+  <!-- favicon png format (size: 32x32) -->
+
+
+  <!-- import tailwind CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- import bootstrap icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+  <!-- Jinja block title -->
+  <title>{% block title %}{% endblock %}</title>
+
+</head>
+
+<body>
+
+  <header>
+    <nav>
+      <div>
+        <a href="#">Logo</a>
+      </div>
+
+      <ul>
+        <li><a href="#">Contatti</a></li>
+        <li><a href="#">Chi Siamo</a></li>
+        <li><a href="#">Accedi</a></li>
+        <li><a href="#"></a></li>
+      </ul>
+    </nav>
+
+    <h1>{% block hero %}{% endblock %}</h1>
+    <h2>{% block subtitle %}{% endblock %}</h2>
+  </header>
+
+  <main>
+    <aside>{% block aside %}{% endblock %}</aside>
+    <section>{% block main %}{% endblock %}</section>
+  </main>
+
+  <footer>
+    <nav>
+      <ul>
+        <li><a href="#">link copyright</a></li>
+        <li><a href="#">link copyright</a></li>
+        <li><a href="#">link copyright</a></li>
+      </ul>
+    </nav>
+  </footer>
+</body>
+
+</html>
