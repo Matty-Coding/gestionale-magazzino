@@ -11,7 +11,10 @@
     content="Gestionale magazzino Full-Stack Project, backend Flask e frontend Tailwind e JavaScript Vanilla">
 
   <!-- favicon png format (size: 32x32) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo.png') }}">
 
+  <!-- CSRF token -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- import tailwind CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>

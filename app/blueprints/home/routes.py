@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from flask_login import current_user, login_required
 
 home_bp = Blueprint(
     name="home",
@@ -10,4 +11,13 @@ home_bp = Blueprint(
 
 @home_bp.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("index.html")
+
+
+@home_bp.route("/dashboard")
+@login_required
+def dashboard():
+    if not current_user.is_verified:
+        return render_template("user_dashboard.html")
+
+    return render_template("admin_dashboard.html")    

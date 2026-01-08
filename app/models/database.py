@@ -42,10 +42,10 @@ class Prodotto(db.Model):
 
     # relazione con la tabella categorie
     categoria_id: Mapped[int] = mapped_column(ForeignKey("categorie.id"))
-    categoria = relationship("Categoria", back_populates="prodotti")
+    categoria: Mapped["Categoria"] = relationship("Categoria", back_populates="prodotti")
 
     # relazione con la tabella fornitori
-    fornitori = relationship("FornitoreProdotto", back_populates="prodotto", cascade="all, delete-orphan")
+    fornitori: Mapped[list["FornitoreProdotto"]] = relationship("FornitoreProdotto", back_populates="prodotto", cascade="all, delete-orphan")
 
 
     def __str__(self):
@@ -67,11 +67,11 @@ class Fornitore(db.Model):
     telefono: Mapped[str] = mapped_column(String(20), nullable=False, unique=True, index=True)
 
     # relazione con la tabella prodotti
-    prodotti = relationship("FornitoreProdotto", back_populates="fornitore", cascade="all, delete-orphan")
+    prodotti: Mapped[list["FornitoreProdotto"]] = relationship("FornitoreProdotto", back_populates="fornitore", cascade="all, delete-orphan")
 
     # relazione con la tabella users
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
-    user = relationship("User", back_populates="fornitore", uselist=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False)
+    user: Mapped["User"] = relationship("User", back_populates="fornitore", uselist=False)
 
     def __str__(self):
         return self.ragione_sociale
@@ -91,8 +91,8 @@ class FornitoreProdotto(db.Model):
     fornitore_id: Mapped[int] = mapped_column(ForeignKey("fornitori.id"), primary_key=True)
     prodotto_id: Mapped[int] = mapped_column(ForeignKey("prodotti.id"), primary_key=True)
 
-    fornitore = relationship("Fornitore", back_populates="prodotti")
-    prodotto = relationship("Prodotto", back_populates="fornitori")
+    fornitore: Mapped[Fornitore] = relationship("Fornitore", back_populates="prodotti")
+    prodotto: Mapped[Prodotto] = relationship("Prodotto", back_populates="fornitori")
 
     def __str__(self):
         return f"{self.fornitore} - {self.prodotto}"
@@ -113,6 +113,8 @@ class User(db.Model, UserMixin):
     ruolo: Mapped[str] = mapped_column(String(20), default="CLIENTE")
     verificato: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    fornitore: Mapped[Fornitore] = relationship("Fornitore", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -126,6 +128,7 @@ class User(db.Model, UserMixin):
     @property
     def is_verified(self) -> bool:
         return self.verificato == True
+
 
     def __str__(self):
         return f"{self.username} - {self.email} - {self.ruolo} - {'Verificato' if self.verificato else 'NonVerificato'}"

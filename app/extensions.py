@@ -17,10 +17,19 @@ migrate = Migrate()
 
 csrf = CSRFProtect()
 
-talisman = Talisman()
-
 limiter = Limiter(
     key_func=get_remote_address,
     storage_uri="memory://",
-    default_limits=["60 per minute"]
+    default_limits=["60 per minute"],
+    headers_enabled=True
+)
+
+talisman = Talisman(
+    content_security_policy={
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self'",
+        "img-src": "'self'",
+        "font-src": "'self'"
+    }
 )

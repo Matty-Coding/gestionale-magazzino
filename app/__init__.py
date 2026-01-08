@@ -1,13 +1,26 @@
 from flask import Flask
-from config import DevConfig
+from config import DevConfig, ProdConfig, BASE_DIR
 from app.extensions import (db, login_manager, session, csrf, talisman, limiter, migrate)
 from app.middleware.limit import MiddleWare
 from app.models.database import User
+from dotenv import load_dotenv
+from os import getenv
+from datetime import datetime, timezone
 
+
+load_dotenv(BASE_DIR / ".env")
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(DevConfig)
+
+    # =======================================
+    # == Configurazione dinamica dev/prod ===
+    # =======================================
+    if getenv("FLASK_ENV") == "dev":
+        app.config.from_object(DevConfig)
+    else:
+        app.config.from_object(ProdConfig)
+
     app.config.update(SESSION_SQLALCHEMY=db)
 
     # ===========================
@@ -18,13 +31,8 @@ def create_app():
     login_manager.init_app(app)
     session.init_app(app)
     csrf.init_app(app)
-    talisman.init_app(app, content_security_policy={
-        "default-src": "'self'",
-        "script-src": "'self' https://cdn.jsdelivr.net",
-        "style-src": "'self' https://cdn.jsdelivr.net",
-        "img-src": "'self'"
-    })
     limiter.init_app(app)
+    talisman.init_app(app)
     
     # ===================
     # == LoginManager ===
@@ -54,7 +62,6 @@ def create_app():
     # ==========================
     @app.context_processor
     def inject_current_year():
-        from datetime import datetime, timezone
         return {"current_year": datetime.now(timezone.utc).year}
 
     # ==========================
