@@ -2,12 +2,17 @@
 
 {% block title %} Gestionale Magazzino | Home {% endblock %}
 
-{% block hero %}
-  Gestionale Magazzino by Matty-Coding
+{% block header %}
+  <div class="flex h-full justify-between px-6">
+    {% include '/components/logo.html' %}
+    {% include '/components/navbar.html' %}
+  </div>
 {% endblock %}
 
-{% block subtitle %}
-  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae enim nulla voluptatum blanditiis excepturi saepe
-  asperiores deserunt molestiae dolorum esse aut tenetur atque aspernatur expedita, dignissimos libero ut recusandae
-  nobis!
+{% block main %}
+  {% include '/components/hero.html' %}
+{% endblock %}
+
+{% block footer %}
+  {% include '/components/footer.html' %}
 {% endblock %}

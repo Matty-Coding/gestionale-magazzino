@@ -17,7 +17,7 @@ def home():
 @home_bp.route("/dashboard")
 @login_required
 def dashboard():
-    if not current_user.is_verified:
+    if not current_user.is_admin:
         return render_template("user_dashboard.html")
 
     return render_template("admin_dashboard.html")    

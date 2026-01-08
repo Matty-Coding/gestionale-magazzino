@@ -1,17 +1,17 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField, RadioField
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField,SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 
 
 class RegisterForm(FlaskForm):
     username = StringField(
         "Username",
-        render_kw = {"placeholder": "Username"},
+        render_kw = {"placeholder": "Username", "autofocus": "on"},
         validators=[
             DataRequired(message="Devi inserire un username!"),
             Length(min=3, max=25, message="L'username deve essere compreso tra 3 e 25 caratteri!"),
             Regexp(
-                pattern=r"^[A-Za-z][A-Za-z0-9 ]*$",
+                regex=r"^[A-Za-z][A-Za-z0-9 ]*$",
                 message="L'username deve iniziare con una lettera e contenere solo lettere, numeri o spazi!",
             )
         ]
@@ -34,13 +34,13 @@ class RegisterForm(FlaskForm):
             DataRequired(message="Devi inserire una password!"),
             Length(min=8, message="La password deve contenere almeno 8 caratteri!"),
             Regexp(
-                pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
+                regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
                 message="La password deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
             )
         ]
     )
 
-    conferma_password = PasswordField(
+    password2 = PasswordField(
         "Conferma Password",
         render_kw = {"placeholder": "Conferma Password"},
         validators = [
@@ -49,18 +49,18 @@ class RegisterForm(FlaskForm):
         ]
     )
 
-    ruolo = RadioField(
+    ruolo = SelectField(
         "Ruolo",
-        choices = [("CLIENTE", "CLIENTE"), ("FORNITORE", "FORNITORE")],
-        default = "CLIENTE"
+        choices = [("cliente", "Cliente"), ("fornitore", "Fornitore")],
     )
 
     submit = SubmitField("Registrati")
 
+
 class LoginForm(FlaskForm):
     email = EmailField(
         "Email",
-        render_kw = {"placeholder": "Email"},
+        render_kw = {"placeholder": "Email", "autofocus": "on"},
         validators = [
             DataRequired(message="Devi inserire una email!"),
             Email(check_deliverability=True, message="L'email non è valida!"),
@@ -75,7 +75,7 @@ class LoginForm(FlaskForm):
             DataRequired(message="Devi inserire una password!"),
             Length(min=8, message="La password deve contenere almeno 8 caratteri!"),
             Regexp(
-                pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
+                regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
                 message="La password deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
             )
         ]

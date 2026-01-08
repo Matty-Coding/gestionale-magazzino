@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Gestionale Magazzino | Login {% endblock %}
+
+{% block header %}
+  {% include '/components/logo.html' %}
+{% endblock %}
+
+{% block main %}
+  <form action="{{ url_for('auth.login') }}" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    {{ form.email.label }}
+    {{ form.email }}
+
+    {{ form.password.label }}
+    {{ form.password }}
+
+    {{ form.remember.label }}
+    {{ form.remember }}
+
+    {{ form.submit() }}
+
+  </form>  
+{% endblock %}

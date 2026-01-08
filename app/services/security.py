@@ -1,7 +1,6 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from flask import current_app
 from datetime import timedelta
-
+from config import Config
 
 class TokenService:
     """
@@ -9,9 +8,9 @@ class TokenService:
     """
     
     def __init__(self):
-        self.serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        self.autentication_salt = current_app.config["AUTHENTICATION_SALT"]
-        self.reset_password_salt = current_app.config["RESET_PASSWORD_SALT"]
+        self.serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
+        self.autentication_salt = Config.AUTHENTICATION_SALT
+        self.reset_password_salt = Config.RESET_PASSWORD_SALT
 
     def generate_token(self, email:str, salt:str) -> str:
         """

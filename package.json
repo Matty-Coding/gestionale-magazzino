@@ -3,5 +3,8 @@
     "@tailwindcss/cli": "^4.1.18",
     "bootstrap-icons": "^1.13.1",
     "tailwindcss": "^4.1.18"
+  },
+  "scripts": {
+    "tailwind:dev": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css --watch"
   }
 }
