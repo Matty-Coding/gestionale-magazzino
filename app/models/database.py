@@ -69,6 +69,10 @@ class Fornitore(db.Model):
     # relazione con la tabella prodotti
     prodotti = relationship("FornitoreProdotto", back_populates="fornitore", cascade="all, delete-orphan")
 
+    # relazione con la tabella users
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
+    user = relationship("User", back_populates="fornitore", uselist=False)
+
     def __str__(self):
         return self.ragione_sociale
     
@@ -118,6 +122,10 @@ class User(db.Model, UserMixin):
     @property
     def is_admin(self) -> bool:
         return self.ruolo == "ADMIN"
+    
+    @property
+    def is_verified(self) -> bool:
+        return self.verificato == True
 
     def __str__(self):
         return f"{self.username} - {self.email} - {self.ruolo} - {'Verificato' if self.verificato else 'NonVerificato'}"

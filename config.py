@@ -17,9 +17,15 @@ class Config:
     
     SESSION_TYPE = "sqlalchemy"
     SESSION_SERIALIZATION_FORMAT = "json"
-    SESSION_PERMANENT = False,
+    SESSION_PERMANENT = False
 
     PERMANENT_SESSION_LIFETIME = 3600   # 1h
+
+    SENDGRID_API_KEY = getenv("SENDGRID_API_KEY")
+    SENDGRID_FROM_EMAIL = getenv("SENDGRID_FROM_EMAIL")
+
+    AUTHENTICATION_SALT = getenv("AUTHENTICATION_SALT")
+    RESET_PASSWORD_SALT = getenv("RESET_PASSWORD_SALT")
 
 # =========================================================
 # =============== Configurazione per sviluppo =============
@@ -34,6 +40,7 @@ class DevConfig(Config):
     SESSION_COOKIE_SECURE = False
 
     TEMPLATES_AUTO_RELOAD = True
+
 # =========================================================
 # ============== Configurazione per produzione ============
 # =========================================================

@@ -4,6 +4,8 @@ from app.extensions import limiter
 from flask_login import login_required, login_user, logout_user, current_user
 from app.utils.decorators import admin_required
 from app.models.user_crud import UserCRUD
+from app.services.mail_sender import send_email
+from app.services.security import TokenService
 
 
 auth = Blueprint(
@@ -28,7 +30,6 @@ def register():
             password=form.password.data,
             ruolo=form.ruolo.data
         )
-
 
         return jsonify({"stato": "success", "messaggio": "Registrato con successo!"})
 

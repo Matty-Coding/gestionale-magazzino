@@ -1,8 +1,8 @@
 from flask import Flask
 from config import DevConfig
-from app.extensions import (db, login_manager, session, csrf, talisman, limiter, mail, migrate)
+from app.extensions import (db, login_manager, session, csrf, talisman, limiter, migrate)
 from app.middleware.limit import MiddleWare
-from app.models.database import User, IpBloccati
+from app.models.database import User
 
 
 def create_app():
@@ -25,8 +25,7 @@ def create_app():
         "img-src": "'self'"
     })
     limiter.init_app(app)
-    mail.init_app(app)  # pronto per inviare mail
-
+    
     # ===================
     # == LoginManager ===
     # ===================
@@ -59,7 +58,7 @@ def create_app():
         return {"current_year": datetime.now(timezone.utc).year}
 
     # ==========================
-    # Blueprint
+    # ======  Blueprints  ======
     # ==========================
     from app.blueprints.home.routes import home_bp
     app.register_blueprint(home_bp)
