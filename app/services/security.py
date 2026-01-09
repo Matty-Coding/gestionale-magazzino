@@ -28,7 +28,7 @@ class TokenService:
             email = self.serializer.loads(
                 token,
                 salt=salt,
-                max_age=expiration
+                max_age=int(expiration.total_seconds())
             )
 
             return email

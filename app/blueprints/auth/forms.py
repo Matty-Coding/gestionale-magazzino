@@ -1,12 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField,SelectField
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField,SelectField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 
 
 class RegisterForm(FlaskForm):
     username = StringField(
         "Username",
-        render_kw = {"placeholder": "Username", "autofocus": "on"},
+        render_kw = {"placeholder": "Mario"},
         validators=[
             DataRequired(message="Devi inserire un username!"),
             Length(min=3, max=25, message="L'username deve essere compreso tra 3 e 25 caratteri!"),
@@ -19,7 +19,7 @@ class RegisterForm(FlaskForm):
 
     email = EmailField(
         "Email",
-        render_kw = {"placeholder": "Email"},
+        render_kw = {"placeholder": "rossi.mario@esempio.it"},
         validators = [
             DataRequired(message="Devi inserire una email!"),
             Email(check_deliverability=True, message="L'email non è valida!"),
@@ -29,29 +29,29 @@ class RegisterForm(FlaskForm):
         
     password = PasswordField(
         "Password",
-        render_kw = {"placeholder": "Password"},
+        render_kw = {"placeholder": "••••••••"},
         validators = [
             DataRequired(message="Devi inserire una password!"),
-            Length(min=8, message="La password deve contenere almeno 8 caratteri!"),
             Regexp(
                 regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
-                message="La password deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
+                message="La password deve essere di almeno 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
             )
         ]
     )
 
     password2 = PasswordField(
         "Conferma Password",
-        render_kw = {"placeholder": "Conferma Password"},
+        render_kw = {"placeholder": "••••••••"},
         validators = [
             DataRequired(message="Devi confermare la password!"),
             EqualTo("password", message="Le password non corrispondono!")
         ]
     )
 
-    ruolo = SelectField(
+    ruolo = RadioField(
         "Ruolo",
         choices = [("cliente", "Cliente"), ("fornitore", "Fornitore")],
+        default = "cliente"
     )
 
     submit = SubmitField("Registrati")
@@ -60,7 +60,7 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = EmailField(
         "Email",
-        render_kw = {"placeholder": "Email", "autofocus": "on"},
+        render_kw = {"placeholder": "rossi.mario@esempio.it"},
         validators = [
             DataRequired(message="Devi inserire una email!"),
             Email(check_deliverability=True, message="L'email non è valida!"),
@@ -70,13 +70,12 @@ class LoginForm(FlaskForm):
 
     password = PasswordField(
         "Password",
-        render_kw = {"placeholder": "Password"},
+        render_kw = {"placeholder": "••••••••"},
         validators = [
             DataRequired(message="Devi inserire una password!"),
-            Length(min=8, message="La password deve contenere almeno 8 caratteri!"),
             Regexp(
                 regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
-                message="La password deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
+                message="La password deve essere di almeno 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
             )
         ]
     )

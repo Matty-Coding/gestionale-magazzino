@@ -3,47 +3,79 @@
 {% block title %} Gestionale Magazzino | Registrazione Utente {% endblock %}
 
 {% block header %}
-  {% include '/components/logo.html' %}
+  <div class="h-full px-5 flex items-center text-xl font-semibold cursor-pointer hover:underline">
+    <a href="{{ url_for('home.index') }}"><i class="bi bi-arrow-left mr-2"></i>Torna alla home</a>
+  </div>
 {% endblock %}
 
 {% block main %}
-  <form id="register-form" action="{{ url_for('auth.register') }}" method="post" novalidate>
-    {{ form.hidden_tag() }}
+<div class="flex max-w-5xl mx-auto h-max justify-between items-center mt-10">
+  
+  <div class="flex-1 flex flex-col gap-5 px-8">
+    <h1 class="text-6xl font-bold text-center">Benvenuto!</h1>
+    <p class="text-2xl font-semibold text-center">Registrati per accedere a tutte le funzionalità che abbiamo pensato per te.</p>
+  </div>
+  
+  <div class="flex-1 bg-[#2e201292] border rounded-xl p-10 mx-auto">
 
-    <fieldset>
-      <legend>Nome dell'Account</legend>
-      {{ form.username.label }}
-      {{ form.username }}
-      <small id="username-error"></small>
-    </fieldset>
+    <!-- Flash message -->
+    <div id="flash" class="hidden py-2 px-4 text-black rounded">
+      <i id="message-icon"></i>
+      <span id="message-text" class="ml-1"></span>  
+    </div>
 
-    <fieldset>
-      <legend>Credenziali Utente</legend>
-      
-      {{ form.email.label }}
-      {{ form.email }}
-      <small id="email-error"></small>
+    <form id="register-form" action="{{ url_for('auth.register') }}" method="post" novalidate 
+      class="flex flex-col gap-1 text-lg">
 
-      {{ form.password.label }}
-      {{ form.password }}
-      <small id="password-error"></small>
+      {{ form.hidden_tag() }}
 
-      {{ form.password2.label }}
-      {{ form.password2 }}
-      <small id="password2-error"></small>
-    </fieldset>
-    
-    <fieldset>
-      <legend>Tipo di Account</legend>
+      {{ form.username.label(class="font-semibold text-xl") }}
+      {{ form.username(class="border-t border-white py-2 px-3 outline-none placeholder:italic placeholder:text-xl focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="username-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
 
-      {{ form.ruolo.label }}
-      {{ form.ruolo }}
-      <small id="ruolo-error"></small>
-    </fieldset>
+      {{ form.email.label(class="font-semibold text-xl") }}
+      {{ form.email(class="border-t border-white py-2 px-3 outline-none placeholder:italic placeholder:text-xl focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="email-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
 
-    {{ form.submit() }}
+      {{ form.password.label(class="font-semibold text-xl") }}
+      {{ form.password(class="border-t border-white py-2 px-3 outline-none placeholder:text-2xl
+      focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="password-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
 
-  </form>  
+      {{ form.password2.label(class="font-semibold text-xl") }}
+      {{ form.password2(class="border-t border-white py-2 px-3 outline-none placeholder:text-2xl
+      focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="password2-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+
+      <div class="w-full flex gap-2 justify-between my-2">
+        {% for subfield in form.ruolo %}
+          <div class="flex-1">
+            {{ subfield(class="peer hidden") }}
+            
+            <label for="{{ subfield.id }}" 
+              class="block w-full py-1 px-3 text-center border border-amber-500 rounded-lg cursor-pointer 
+                transition-all hover:underline text-white font-semibold peer-checked:bg-linear-to-b peer-checked:from-amber-800 peer-checked:via-amber-700 peer-checked:to-amber-500 
+                peer-checked:text-black peer-checked:border-black"
+            >
+              {{ subfield.label.text }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+
+      {{ form.submit(class="font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-2 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+
+    </form>  
+
+    <div class="mt-3 text-lg text-center">
+      <p>
+        Hai già un account? 
+        <a href="{{ url_for('auth.login') }}" class="text-amber-500 font-semibold hover:underline">Accedi!</a>
+      </p>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block javascript %}

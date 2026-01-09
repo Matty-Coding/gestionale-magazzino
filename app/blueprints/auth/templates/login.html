@@ -3,23 +3,77 @@
 {% block title %} Gestionale Magazzino | Login {% endblock %}
 
 {% block header %}
-  {% include '/components/logo.html' %}
+<div class="h-full px-5 flex items-center text-xl font-semibold cursor-pointer hover:underline">
+  <a href="{{ url_for('home.index') }}"><i class="bi bi-arrow-left mr-2"></i>Torna alla home</a>
+</div>
 {% endblock %}
 
 {% block main %}
-  <form action="{{ url_for('auth.login') }}" method="post" novalidate>
-    {{ form.hidden_tag() }}
+<div class="flex max-w-5xl mx-auto h-max justify-between items-center mt-12">
+  <div class="flex-1 flex flex-col gap-5 px-8">
+    <h1 class="text-6xl font-bold text-center">Bentornato!</h1>
+    <p class="text-2xl font-semibold text-center">Accedi per continuare ad usufruire delle funzionalità che abbiamo pensato per te.</p>
+  </div>
+  <div class="flex-1 bg-[#2e201292] border rounded-xl p-10 mx-auto">
 
-    {{ form.email.label }}
-    {{ form.email }}
+    <!-- Flash message -->
+    <div id="flash" class="hidden py-2 px-4 text-black rounded">
+      <i id="message-icon"></i>
+      <span id="message-text" class="ml-1"></span>  
+    </div>
 
-    {{ form.password.label }}
-    {{ form.password }}
+    {% set res = result or request.args.get("result") %}
+    {% set msg = message or request.args.get("message") %}
+    
+    {% if res %}  
+      {% if res == "success" %}
+        <div id="result-success" class="py-2 px-4 text-black rounded bg-green-400"> 
+          <i class="bi bi-check-circle-fill"></i>
+          <span class="ml-1">{{ msg }}</span>
+        </div>
+      {% elif res == "error" %}
+        <div id="result-error" class="py-2 px-4 text-black rounded bg-red-400"> 
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span class="ml-1">{{ msg }}</span>
+        </div>
+      {% endif %}  
+    {% endif %}
+    
+    <form id="login-form" action="{{ url_for('auth.login') }}" method="post" novalidate 
+      class="flex flex-col gap-2 text-lg">
 
-    {{ form.remember.label }}
-    {{ form.remember }}
+      {{ form.hidden_tag() }}
 
-    {{ form.submit() }}
+      {{ form.email.label(class="font-semibold text-xl") }}
+      {{ form.email(class="border-t border-white py-2 px-3 outline-none placeholder:italic placeholder:text-xl focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="email-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
 
-  </form>  
+      {{ form.password.label(class="font-semibold text-xl") }}
+      {{ form.password(class="border-t border-white py-2 px-3 outline-none placeholder:text-2xl
+      focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
+      <small id="password-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+
+      <div class="flex gap-2 items-center ml-auto w-fit pb-2 hover:text-amber-500 hover:cursor-pointer">
+        {{ form.remember.label(class="hover:cursor-pointer") }}
+        {{ form.remember(class="hover:cursor-pointer w-5 h-5 accent-amber-500") }}
+      </div>
+
+      {{ form.submit(class="font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-2 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+
+    </form>  
+    
+    <div class="flex justify-between flex-col items-center gap-5 mt-3 text-lg">
+      <p>
+        Non hai ancora un account? 
+        <a href="{{ url_for('auth.register') }}" class="text-amber-500 font-semibold hover:underline">Registrati!</a>
+      </p>
+      <a href="#" class=" text-amber-500 font-semibold hover:underline">Password dimenticata?</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+  <script src="{{ url_for('auth.static', filename='login.js') }}"></script>
 {% endblock %}

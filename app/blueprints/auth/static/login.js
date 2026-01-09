@@ -1,7 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("#register-form");
+    const form = document.querySelector("#login-form");
     const url = form.getAttribute("action");
     const csrfToken = document.querySelector("meta[name=csrf-token]").getAttribute("content");
+
+    // esito risultato validazione email
+    const risultati = document.querySelectorAll("#result-success, #result-error");
+    risultati.forEach(risultato => {
+        setTimeout(() => {
+            risultato.classList.add("hidden");
+        }, 5000);
+    })
 
     form.addEventListener("submit", async (e) => {
         // evita reload della pagina
@@ -12,11 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // preparazione dati per il fetch al backend
         const data = {
-            username: (formData.get("username")).trim(),
             email: (formData.get("email")).trim(),
-            password: (formData.get("password")).trim(),
-            password2: (formData.get("password2")).trim(),
-            ruolo: (formData.get("ruolo"))
+            password: (formData.get("password")).trim()
         }
 
         // fetch al backend
@@ -25,32 +30,63 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken
+                    "X-CSRF-Token": csrfToken,
+                    "Accept": "application/json"   // RIVEDERE
                 },
                 body: JSON.stringify(data)
             });
 
+            // RIVEDERE
+            // GESTIONE BLOCCO (Status 429)
+            if (response.status === 429) {
+                const result = await response.json();
+
+                if (result.redirect) {
+                    window.location.href = result.redirect;
+                    return;
+                }
+            }
+            // ================================
+
             const result = await response.json();
 
             const flash = document.querySelector("#flash");
-            const flashIcon = document.querySelector("#message-icon")
+            const flashIcon = document.querySelector("#message-icon");
             const flashMessage = document.querySelector("#message-text");
 
             if (result.status === "success") {
                 flash.classList.add("bg-green-400");
-                flashIcon.className = "bi-check-circle-fill"
+                flashIcon.className = "bi-check-circle-fill";
                 flashMessage.textContent = result.message;
                 flash.classList.remove("hidden");
 
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                },
+                    2000);
+
             } else if (result.status === "warning") {
                 flash.classList.add("bg-yellow-400");
-                flashIcon.className = "bi-exclamation-triangle-fill"
+                flashIcon.className = "bi-exclamation-triangle-fill";
                 flashMessage.textContent = result.message;
                 flash.classList.remove("hidden");
 
                 setTimeout(() => {
                     flash.classList.add("hidden");
-                    flash.classList.remove("bg-yellow-400");
+                    flashMessage.textContent = "";
+                },
+                    3000);
+
+            } else if (result.status === "error" && result.message === "Credenziali errate") {
+                flash.classList.add("bg-red-400");
+                flashIcon.className = "bi-exclamation-triangle-fill";
+                flashMessage.textContent = result.message;
+                flash.classList.remove("hidden");
+
+                setTimeout(() => {
+                    flash.classList.add("hidden");
+                    flash.classList.remove("bg-red-400");
+                    flashIcon.className = "";
                     flashMessage.textContent = "";
                 },
                     3000);

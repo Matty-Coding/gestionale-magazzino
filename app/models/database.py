@@ -1,6 +1,6 @@
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, Numeric
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -128,6 +128,12 @@ class User(db.Model, UserMixin):
     @property
     def is_verified(self) -> bool:
         return self.verificato == True
+    
+    @property
+    def validate_email(self):
+        setattr(self, "verificato", True)
+        db.session.commit()
+        return
 
 
     def __str__(self):
@@ -146,5 +152,12 @@ class IpBloccati(db.Model):
     ip: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
     blocked_until: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
 
-    def is_blocked(self):
-        return datetime.now(timezone.utc) < self.blocked_until
+    @property
+    def is_blocked(self) -> bool:
+        if not self.blocked_until:
+            return False
+
+        if self.blocked_until.tzinfo is None:
+            self.blocked_until = self.blocked_until.replace(tzinfo=timezone.utc)
+        
+        return self.blocked_until > datetime.now(timezone.utc)

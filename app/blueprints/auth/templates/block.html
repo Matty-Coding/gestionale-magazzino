@@ -1,32 +1,4 @@
-{% extends 'base.html' %}
+<h1>bloccato</h1>
+<h2>{{ timer }}s</h2>
 
-{% block title %}
-  Temporaneamente bloccato
-{% endblock %}
-
-{% block hero %}
-  Sei stato temporaneamente bloccato!
-{% endblock %}
-
-{% set secondi = timer %}
-
-{% block subtitle %}
-  Riprova tra <span id="timer">{{ seconds }}</span> secondi. 
-{% endblock %}
-
-{% block content %}
-  
-<script>
-  let remaining = secondi;
-
-  setInterval(() => {
-    if (remaining <= 0) return;
-    remaining--;
-    document.getElementById("timer").innerText = remaining;
-  }, 1000);
-</script>
-
-{% endblock %}
-  
-
-<!-- riscrivere -->
+<!-- RIFARE -->

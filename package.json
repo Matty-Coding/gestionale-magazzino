@@ -6,5 +6,8 @@
   },
   "scripts": {
     "tailwind:dev": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11"
   }
 }

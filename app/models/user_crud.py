@@ -13,13 +13,14 @@ class UserCRUD:
         """
         Crea un nuovo utente nel db e restituisce l'oggetto `User`.
         """
-    
+
         user_obj = User(
             username=username,
-            email=email,
-            password_hash=password,
+            email=email.lower(),
             ruolo=ruolo
         )
+
+        user_obj.set_password(password)
 
         self.session.add(user_obj)
         return user_obj
@@ -29,7 +30,6 @@ class UserCRUD:
         """
         Restituisce l'utente con l'id specificato.
         """
-
         return self.session.query(User).get(id)
     
 
@@ -37,26 +37,29 @@ class UserCRUD:
         """
         Restituisce l'utente con l'email specificata.
         """
-
-        return self.session.query(User).filter_by(email=email).first()
+        return self.session.query(User).filter_by(email=email.lower()).first()
     
 
     @db_commiter
-    def update_user(self, user: User, **kwargs) -> User:
+    def update_username(self, user: User, username: str) -> User:
         """
-        Aggiorna l'utente nel db.
+        Aggiorna l'username dell'utente.
         """
-
-        for key, value in kwargs.items():
-            setattr(user, key, value)
-
+        setattr(user, "username", username)
         return user
     
+
+    @db_commiter
+    def reset_password(self, user: User, password: str) -> None:
+        """
+        Resetta la password dell'utente nel db.
+        """
+        user.set_password(password)
+
 
     @db_commiter
     def delete_user(self, user: User) -> None:
         """
         Elimina l'utente dal db.
         """
-
         self.session.delete(user)

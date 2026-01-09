@@ -28,19 +28,17 @@
 </head>
 
 <body 
-  class="bg-[url('/static/images/hero.png')] 
-    bg-no-repeat bg-fixed bg-cover 
-    flex flex-col h-dvh text-white backdrop-blur-[3px]"
->
+  class="bg-[url('/static/images/hero.png')] bg-no-repeat bg-fixed bg-cover bg-center 
+  flex flex-col h-dvh text-white backdrop-brightness-50">
 
   <!-- header -->
-  <header class="h-20 p-2 sticky top-0">
+  <header class="h-20 p-3 sticky top-0">
     {% block header %}{% endblock %}
   </header>
   
   <!-- main per contenuto core della pagina -->
   <main class="flex-1">
-    <section>{% block main %}{% endblock %}</section>
+    {% block main %}{% endblock %}
   </main>
 
   <!-- footer -->
