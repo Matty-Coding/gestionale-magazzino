@@ -2,6 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("#forgot-form");
     const url = form.getAttribute("action");
 
+    const risultato = document.querySelector("#result-error");
+    setTimeout(() => {
+        risultato.classList.add("hidden");
+    }, 5000);
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 

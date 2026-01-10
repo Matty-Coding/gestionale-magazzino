@@ -63,7 +63,6 @@ def register():
 
 @auth_bp.route("/verify_email/<token>")
 def verify_email(token):
-    print("\n\n\n>>>", token)
     email = token_service.check_auth_token(token)
     if email:
         usercrud.get_user_by_email(email).validate_email
@@ -163,7 +162,7 @@ def forgot_password():
                     message=f"Per resettare la password, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}"
                 )
                 
-                return jsonify({"status": "success", "message": "Ti abbiamo mandato una emai"})
+                return jsonify({"status": "success", "message": "Ti abbiamo mandato una email"})
             
             except Exception:
                 return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
@@ -171,6 +170,15 @@ def forgot_password():
         return jsonify({"status": "error", "message": form.errors})
     
     return render_template("forgot-password.html", form=form)
+
+
+@auth_bp.route("/verify-token/<token>")
+def verify_token(token):
+    email = token_service.check_reset_password_token(token)
+    if email:
+        return redirect(url_for("auth.reset_password", token=token))
+
+    return render_template("forgot-password.html", form=ForgotPasswordForm(), result="error", message="Link non valido o scaduto")
 
 
 @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -192,7 +200,7 @@ def reset_password(token):
 
                 return jsonify({"status": "success", "message": "Password resettata con successo", "redirect": url_for("auth.login")})
 
-            return jsonify({"status": "error", "message": "Link non valido o scaduto"})
+            # return jsonify({"status": "error", "message": "Link non valido o scaduto"})
 
         return jsonify({"status": "error", "message": form.errors})
 
