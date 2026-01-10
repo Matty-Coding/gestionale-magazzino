@@ -1,11 +1,14 @@
-from flask import Blueprint, render_template, request, url_for, session, jsonify, current_app, redirect
-from .forms import RegisterForm, LoginForm
+from flask import (
+    Blueprint, render_template, request, url_for, session, jsonify, current_app, redirect
+    )
+from .forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm
 from app.extensions import limiter
 from flask_login import login_required, login_user, logout_user, current_user
 from app.utils.decorators import admin_required
 from app.models.user_crud import UserCRUD
 from app.services.mail_sender import send_email
 from app.services.security import TokenService
+from app.middleware.limit import MiddleWare
 
 auth_bp = Blueprint(
     name="auth",
@@ -95,7 +98,7 @@ def login():
                     send_email(
                         email=user_obj.email,
                         subject="Verifica email",
-                        message=f"Per verificare la tua email, clicca <a href='{url}'>qui</a>\n Oppure incolla il seguente link nel tuo browser: {url}"
+                        message=f"Per verificare la tua email, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}"
                     )
                     
                     return jsonify({"status": "success", "message": "Ti abbiamo mandato una nuova email di verifica"})
@@ -104,7 +107,8 @@ def login():
                     return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
 
             login_user(user_obj, remember=data.get("remember"))
-
+            session["user_id"] = user_obj.id
+            
             return jsonify({"status": "success", "message": "Login avvenuto con successo", "redirect": url_for("home.dashboard")})
 
         return jsonify({"status": "error", "message": form.errors})
@@ -119,11 +123,77 @@ def logout():
     return redirect(url_for("home.index"))
 
 
-# RIVEDERE
 @auth_bp.route("/block")
 def block():
+    middleware = MiddleWare()
+    timer = middleware.validate_block()
+
+    if timer is None:
+        if current_user.is_authenticated:
+            return redirect(url_for("home.index"))
+
+        return redirect(url_for("auth.login"))
+
     if current_user.is_authenticated:
         logout_user()
     
-    timer = request.args.get("timer")
     return render_template("block.html", timer=timer)
+
+@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    form = ForgotPasswordForm()
+
+    if request.method == "POST":
+        data = request.get_json()
+        form = ForgotPasswordForm(data=data)
+
+        if form.validate():
+            user_obj = usercrud.get_user_by_email(data.get("email"))
+
+            if not user_obj:
+                return jsonify({"status": "warning", "message": "Email non registrata"})
+
+            token = token_service.get_reset_password_token(user_obj.email)
+            url = url_for("auth.reset_password", token=token, _external=True)
+
+            try:
+                send_email(
+                    email=user_obj.email,
+                    subject="Reset password",
+                    message=f"Per resettare la password, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}"
+                )
+                
+                return jsonify({"status": "success", "message": "Ti abbiamo mandato una emai"})
+            
+            except Exception:
+                return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
+
+        return jsonify({"status": "error", "message": form.errors})
+    
+    return render_template("forgot-password.html", form=form)
+
+
+@auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    form = ResetPasswordForm()
+
+    if request.method == "POST":
+        data = request.get_json()
+        form = ResetPasswordForm(data=data)
+
+        if form.validate():
+            email = token_service.check_reset_password_token(token)
+
+            if email:
+                usercrud.reset_password(
+                    user=usercrud.get_user_by_email(email),
+                    password=data.get("password")
+                )
+
+                return jsonify({"status": "success", "message": "Password resettata con successo", "redirect": url_for("auth.login")})
+
+            return jsonify({"status": "error", "message": "Link non valido o scaduto"})
+
+        return jsonify({"status": "error", "message": form.errors})
+
+    return render_template("reset-password.html", form=form, token=token)

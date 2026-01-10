@@ -1,6 +1,6 @@
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, Numeric
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from decimal import Decimal
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -142,9 +142,9 @@ class User(db.Model, UserMixin):
 
 
 # =============================================================================
-# =======================   Modello IP Bloccati   =============================
+# =======================   Modello IP Bloccato   =============================
 # =============================================================================
-class IpBloccati(db.Model):
+class IpBloccato(db.Model):
 
     __tablename__ = "ip_bloccati"
 

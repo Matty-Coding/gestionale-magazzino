@@ -1,4 +1,24 @@
-<h1>bloccato</h1>
-<h2>{{ timer }}s</h2>
+{% extends "base.html" %}
 
-<!-- RIFARE -->
+{% block title %}Account Bloccato{% endblock %}
+
+{% block main %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] text-center">
+    <h1 class="text-6xl font-extrabold text-red-600 mb-4">Accesso Negato</h1>
+    <h2 class="text-3xl text-white">
+      Riprova tra:
+    </h2>
+    <div class="mt-6 p-6 bg-white shadow-xl rounded-2xl border border-gray-100">
+        <span id="timer" 
+              class="text-6xl font-mono font-bold text-gray-800" 
+              data-login-url="{{ url_for('auth.login') }}">
+            {{ timer }}
+        </span>
+        <p class="text-sm uppercase text-black mt-2">secondi</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{{ url_for('auth.static', filename='timer.js') }}"></script>
+{% endblock %}

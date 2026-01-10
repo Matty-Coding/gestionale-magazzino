@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("#login-form");
     const url = form.getAttribute("action");
-    const csrfToken = document.querySelector("meta[name=csrf-token]").getAttribute("content");
 
     // esito risultato validazione email
     const risultati = document.querySelectorAll("#result-success, #result-error");
@@ -24,48 +23,30 @@ document.addEventListener("DOMContentLoaded", () => {
             password: (formData.get("password")).trim()
         }
 
-        // fetch al backend
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken,
-                    "Accept": "application/json"   // RIVEDERE
-                },
-                body: JSON.stringify(data)
-            });
+        const result = await apiRequest(url, "POST", data);
 
-            // RIVEDERE
-            // GESTIONE BLOCCO (Status 429)
-            if (response.status === 429) {
-                const result = await response.json();
+        // se il client non riceve dati, è stato lanciato un errore dal backend (429)
+        if (!result) return;
 
-                if (result.redirect) {
-                    window.location.href = result.redirect;
-                    return;
-                }
-            }
-            // ================================
+        const flash = document.querySelector("#flash");
+        const flashIcon = document.querySelector("#message-icon");
+        const flashMessage = document.querySelector("#message-text");
 
-            const result = await response.json();
-
-            const flash = document.querySelector("#flash");
-            const flashIcon = document.querySelector("#message-icon");
-            const flashMessage = document.querySelector("#message-text");
-
-            if (result.status === "success") {
+        switch (result.status) {
+            case "success":
                 flash.classList.add("bg-green-400");
                 flashIcon.className = "bi-check-circle-fill";
                 flashMessage.textContent = result.message;
                 flash.classList.remove("hidden");
 
                 setTimeout(() => {
+                    // redirect alla dashboard
                     window.location.href = result.redirect;
-                },
-                    2000);
+                }, 1000);
 
-            } else if (result.status === "warning") {
+                break;
+
+            case "warning":
                 flash.classList.add("bg-yellow-400");
                 flashIcon.className = "bi-exclamation-triangle-fill";
                 flashMessage.textContent = result.message;
@@ -74,38 +55,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     flash.classList.add("hidden");
                     flashMessage.textContent = "";
-                },
-                    3000);
+                }, 3000);
 
-            } else if (result.status === "error" && result.message === "Credenziali errate") {
-                flash.classList.add("bg-red-400");
-                flashIcon.className = "bi-exclamation-triangle-fill";
-                flashMessage.textContent = result.message;
-                flash.classList.remove("hidden");
+                break;
 
-                setTimeout(() => {
-                    flash.classList.add("hidden");
-                    flash.classList.remove("bg-red-400");
-                    flashIcon.className = "";
-                    flashMessage.textContent = "";
-                },
-                    3000);
+            case "error":
+                if (result.message === "Credenziali errate") {
 
-            } else {
-                for (const [key, value] of Object.entries(result.message)) {
-                    const errorElement = document.querySelector(`#${key}-error`);
-                    errorElement.textContent = value;
-                    errorElement.classList.remove("hidden");
+                    flash.classList.add("bg-red-400");
+                    flashIcon.className = "bi-exclamation-triangle-fill";
+                    flashMessage.textContent = result.message;
+                    flash.classList.remove("hidden");
 
                     setTimeout(() => {
-                        errorElement.classList.add("hidden");
-                    },
-                        5000);
-                }
-            }
+                        flash.classList.add("hidden");
+                        flash.classList.remove("bg-red-400");
+                        flashIcon.className = "";
+                        flashMessage.textContent = "";
+                    }, 3000);
 
-        } catch (error) {
-            console.error("Qualcosa è andato storto:", error);
+                } else {
+                    for (const [key, value] of Object.entries(result.message)) {
+                        const errorElement = document.querySelector(`#${key}-error`);
+                        errorElement.textContent = value;
+                        errorElement.classList.remove("hidden");
+
+                        setTimeout(() => {
+                            errorElement.classList.add("hidden");
+                        }, 5000);
+                    }
+                }
+
+                break;
         }
-    })
-})
+    });
+});

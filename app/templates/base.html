@@ -44,6 +44,10 @@
   <!-- footer -->
   <footer id="footer">{% block footer %}{% endblock %}</footer>
   
+
+  <!-- script fulcro python <> js (fetch/response) -->
+  <script src="{{ url_for('static', filename='index.js') }}"></script>
+
   {% block javascript %}{% endblock %}
 
 </body>
