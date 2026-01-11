@@ -61,10 +61,9 @@ class Fornitore(db.Model):
     __tablename__ = "fornitori"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    ragione_sociale: Mapped[str] = mapped_column(String(200), nullable=False)
-    partita_iva: Mapped[str] = mapped_column(String(11), nullable=False, unique=True, index=True)
-    email: Mapped[str] = mapped_column(String(120), nullable=False, unique=True, index=True)
-    telefono: Mapped[str] = mapped_column(String(20), nullable=False, unique=True, index=True)
+    ragione_sociale: Mapped[str] = mapped_column(String(200), nullable=True)
+    partita_iva: Mapped[str] = mapped_column(String(11), nullable=True, unique=True, index=True)
+    telefono: Mapped[str] = mapped_column(String(20), nullable=True, unique=True, index=True)
 
     # relazione con la tabella prodotti
     prodotti: Mapped[list["FornitoreProdotto"]] = relationship("FornitoreProdotto", back_populates="fornitore", cascade="all, delete-orphan")

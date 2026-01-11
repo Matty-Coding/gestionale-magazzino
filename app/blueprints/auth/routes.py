@@ -4,7 +4,6 @@ from flask import (
 from .forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm
 from app.extensions import limiter
 from flask_login import login_required, login_user, logout_user, current_user
-from app.utils.decorators import admin_required
 from app.models.user_crud import UserCRUD
 from app.services.mail_sender import send_email
 from app.services.security import TokenService
@@ -74,6 +73,9 @@ def verify_email(token):
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limiter.limit("5/minute")
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("home.dashboard"))
+
     form = LoginForm()
 
     if request.method == "POST":
@@ -182,6 +184,7 @@ def verify_token(token):
 
 
 @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
+@limiter.limit("3/hour")
 def reset_password(token):
     form = ResetPasswordForm()
 

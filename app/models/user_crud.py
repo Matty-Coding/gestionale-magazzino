@@ -1,4 +1,4 @@
-from .database import User
+from .database import User, Fornitore
 from app.extensions import db
 from app.utils.decorators import db_commiter
 
@@ -30,7 +30,7 @@ class UserCRUD:
         """
         Restituisce l'utente con l'id specificato.
         """
-        return self.session.query(User).get(id)
+        return self.session.get(User, id)
     
 
     def get_user_by_email(self, email: str) -> User:

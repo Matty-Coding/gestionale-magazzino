@@ -64,7 +64,7 @@ class TokenService:
             salt=self.reset_password_salt
         )
     
-    def check_reset_password_token(self, token:str, expiration=timedelta(seconds=10)) -> str | bool:
+    def check_reset_password_token(self, token:str, expiration=timedelta(minutes=10)) -> str | bool:
         """
         Verifica token per il reset password.
         """

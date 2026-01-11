@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     flash.classList.add("hidden");
                     flash.classList.remove("bg-yellow-400");
                     flashMessage.textContent = "";
-                }, 3000);
+                }, 5000);
 
                 break;
 
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     setTimeout(() => {
                         errorElement.classList.add("hidden");
-                    }, 5000);
+                    }, 10000);
                 }
 
                 break;

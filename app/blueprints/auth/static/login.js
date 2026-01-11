@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         flash.classList.remove("bg-red-400");
                         flashIcon.className = "";
                         flashMessage.textContent = "";
-                    }, 3000);
+                    }, 5000);
 
                 } else {
                     for (const [key, value] of Object.entries(result.message)) {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         setTimeout(() => {
                             errorElement.classList.add("hidden");
-                        }, 5000);
+                        }, 10000);
                     }
                 }
 

@@ -16,7 +16,7 @@ def create_admin():
         except EmailNotValidError:
             print("L'email non è valida!")
 
-    password = token_hex(8)
+    password = f"A.{token_hex(6)}"
 
     user_obj = usercrud.create_user(
         username=f"admin-{token_hex(5)}",

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField,SelectField, RadioField
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, EmailField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 
 
@@ -51,7 +51,7 @@ class RegisterForm(FlaskForm):
     ruolo = RadioField(
         "Ruolo",
         choices = [("CLIENTE", "Cliente"), ("FORNITORE", "Fornitore")],
-        default = "cliente"
+        default = "CLIENTE"
     )
 
     submit = SubmitField("Registrati")

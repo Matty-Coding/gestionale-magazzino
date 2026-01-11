@@ -1,0 +1,45 @@
+from app.models.database import User, Fornitore
+from app.extensions import db
+from app.utils.decorators import db_commiter
+
+class FornitoreCRUD:
+    def __init__(self):
+        self.session = db.session
+
+    @db_commiter
+    def create_fornitore(
+        self,
+        user: User,
+        ragione_sociale: str = None,
+        iva: str = None,
+        tel: str = None
+    ) -> Fornitore:
+        """
+        Crea un fornitore associato a un utente esistente.
+        """
+
+        if user.fornitore:
+            raise ValueError("L'utente ha già un fornitore associato")
+
+        fornitore_obj = Fornitore(
+            ragione_sociale=ragione_sociale,
+            partita_iva=iva,
+            telefono=tel,
+            user_id=user.id
+        )
+
+        self.session.add(fornitore_obj)
+        return fornitore_obj
+
+    @db_commiter
+    def update_fornitore(self, user_id: int, **kwargs) -> Fornitore:
+        """
+        Aggiorna un fornitore associato ad un utente esistente.
+        """
+
+        fornitore_obj = self.session.query(Fornitore).filter_by(user_id=user_id).first()
+
+        for key, value in kwargs.items():
+            setattr(fornitore_obj, key, value)
+
+        return fornitore_obj
