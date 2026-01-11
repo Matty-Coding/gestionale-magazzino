@@ -110,7 +110,7 @@ class User(db.Model, UserMixin):
     username: Mapped[str] = mapped_column(String(25), nullable=False)
     email: Mapped[str] = mapped_column(String(120), nullable=False, unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
-    ruolo: Mapped[str] = mapped_column(String(20), default="CLIENTE")
+    ruolo: Mapped[str] = mapped_column(String(20), nullable=False)
     verificato: Mapped[bool] = mapped_column(Boolean, default=False)
 
     fornitore: Mapped[Fornitore] = relationship("Fornitore", back_populates="user", uselist=False, cascade="all, delete-orphan")

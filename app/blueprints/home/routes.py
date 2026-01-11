@@ -18,7 +18,7 @@ def index():
 @login_required
 def dashboard():
     if not current_user.is_admin:
-        if current_user.ruolo == "cliente":
+        if current_user.ruolo == "CLIENTE":
             return render_template("cliente_dashboard.html")
         return render_template("fornitore_dashboard.html")
     

@@ -50,7 +50,7 @@ class RegisterForm(FlaskForm):
 
     ruolo = RadioField(
         "Ruolo",
-        choices = [("cliente", "Cliente"), ("fornitore", "Fornitore")],
+        choices = [("CLIENTE", "Cliente"), ("FORNITORE", "Fornitore")],
         default = "cliente"
     )
 

@@ -73,4 +73,7 @@ def create_app():
     from app.blueprints.auth.routes import auth_bp
     app.register_blueprint(auth_bp)
 
+    from app.cli import create_admin_command
+    app.cli.add_command(create_admin_command)
+
     return app
