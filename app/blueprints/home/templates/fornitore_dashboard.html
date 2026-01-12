@@ -12,5 +12,46 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Hai il ruolo di fornitore, questa è la tua dashboard</h1>
+  <h1 class="text-5xl py-2 text-center font-bold">Dashboard {{ current_user.ruolo.capitalize() }}</h1>
+  <section class="h-10 flex bg-slate-800/40 items-center justify-evenly py-2 px-5">
+    <form id="fornitore-data" action="{{ url_for('home.update_fornitore_data') }}" method="post" novalidate>
+      {{ form.hidden_tag() }}
+      
+      {{ form.partita_iva.label(class="font-semibold text-xl mr-1") }}
+      {{ form.partita_iva(class="border-b-2 w-36 text-xl border-white/70 px-3 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
+      <span>(11 Caratteri)</span>
+      
+      {{ form.telefono.label(class="font-semibold text-xl mr-1 ml-5") }}
+      {{ form.telefono(class="border-b-2 w-36 text-xl border-white/70 px-3 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
+      <span>(10 Caratteri)</span>
+
+      {{ form.ragione_sociale.label(class="font-semibold text-xl mr-1 ml-5") }}
+      {{ form.ragione_sociale(
+        class="border-b-2 text-xl border-white/70 italic px-2 focus:ring-2 cursor-pointer focus:ring-amber-500 focus:rounded-md [&_option]:bg-amber-500/90 [&_option]:text-black ") }}
+
+      {{ form.submit(class="ml-5 font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-1 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+    </form>
+  </section>
+
+  <h2 class="text-">I tuoi prodotti <span>{{ totale_pezzi }}</span></h2>
+
+  <div class="grid grid-cols-4 gap-2 p-7">
+    {% for prodotto in prodotti %}
+      <article 
+        class="bg-black/60 rounded-lg border border-white 
+        flex flex-col gap-2 
+        cursor-pointer 
+        hover:bg-lime-500/30 hover:scale-95 transition-all duration-200 ease-in">
+        <h2 class="text-center text-2xl font-bold">{{ prodotto.nome }}</h2>
+        <p class="px-4"><span class="font-semibold">Codice:  </span>{{ prodotto.codice }}</p>
+        <p class="px-4"><span class="font-semibold">Quantità:  </span>{{ prodotto.quantita }} disponibili</p>
+        <p class="px-4 pb-4"><span class="font-semibold">Prezzo:  </span>{{ prodotto.prezzo }}€</p>
+      </article>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{{ url_for('auth.static', filename='change-username.js') }}"></script>
+  <script src="{{ url_for('home.static', filename='fornitore.js') }}"></script>
 {% endblock %}

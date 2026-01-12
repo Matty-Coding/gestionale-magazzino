@@ -37,12 +37,12 @@
   </header>
   
   <!-- main per contenuto core della pagina -->
-  <main class="flex-1">
+  <main class="flex-1 overflow-y-scroll">
     {% block main %}{% endblock %}
   </main>
 
   <!-- footer -->
-  <footer id="footer">{% block footer %}{% endblock %}</footer>
+  <footer class="h-20" id="footer">{% block footer %}{% endblock %}</footer>
   
 
   <!-- script fulcro python <> js (fetch/response) -->

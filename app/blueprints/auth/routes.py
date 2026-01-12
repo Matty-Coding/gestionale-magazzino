@@ -1,6 +1,4 @@
-from flask import (
-    Blueprint, render_template, request, url_for, session, jsonify, current_app, redirect
-    )
+from flask import Blueprint, render_template, request, url_for, jsonify, redirect
 from .forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm
 from app.extensions import limiter
 from flask_login import login_required, login_user, logout_user, current_user
@@ -22,6 +20,7 @@ usercrud = UserCRUD()
 token_service = TokenService()
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("10/minute")
 def register():
     form = RegisterForm()
 
@@ -108,7 +107,6 @@ def login():
                     return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
 
             login_user(user_obj, remember=data.get("remember"))
-            session["user_id"] = user_obj.id
             
             return jsonify({"status": "success", "message": "Login avvenuto con successo", "redirect": url_for("home.dashboard")})
 
@@ -180,7 +178,7 @@ def verify_token(token):
     if email:
         return redirect(url_for("auth.reset_password", token=token))
 
-    return render_template("forgot-password.html", form=ForgotPasswordForm(), result="error", message="Link non valido o scaduto")
+    return redirect("auth.forgot_password", result="error", message="Link non valido o scaduto")
 
 
 @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -201,10 +199,51 @@ def reset_password(token):
                     password=data.get("password")
                 )
 
-                return jsonify({"status": "success", "message": "Password resettata con successo", "redirect": url_for("auth.login")})
-
-            # return jsonify({"status": "error", "message": "Link non valido o scaduto"})
+                return jsonify({"status": "success", "redirect": url_for("auth.login", result="success", message="Password resettata correttamente")})
 
         return jsonify({"status": "error", "message": form.errors})
 
     return render_template("reset-password.html", form=form, token=token)
+
+
+@auth_bp.route("/update-password", methods=["GET", "POST"])
+@login_required
+@limiter.limit("3/hour")
+def update_password():
+    form = ResetPasswordForm()
+
+    if request.method == "POST":
+        data = request.get_json()
+        form = ResetPasswordForm(data=data)
+
+        if form.validate():
+            usercrud.reset_password(
+                user=current_user,
+                password=data.get("password")
+            )
+
+            return jsonify({"status": "success", "message": "Password aggiornata correttamente", "redirect": url_for("home.dashboard")})
+
+        return jsonify({"status": "error", "message": form.errors})
+
+    return render_template("update-password.html", form=form)
+
+@auth_bp.route("/update-username", methods=["GET", "POST"])
+def update_username():
+    from re import match
+    data = request.get_json()
+
+    new_username = data.get("username")
+
+    if not new_username:
+        return jsonify({"status": "error", "message": "Devi inserire un username!"})
+    
+    if len(new_username) < 3 or len(new_username) > 20:
+        return jsonify({"status": "error", "message": "L'username deve essere compreso tra 3 e 20 caratteri!"})
+    
+    if not match(r"^[A-Za-z][A-Za-z0-9 ]*$", new_username):
+        return jsonify({"status": "error", "message": "L'username deve iniziare con una lettera e contenere solo lettere, numeri o spazi!"})
+    
+    usercrud.update_username(current_user, new_username)
+
+    return jsonify({"status": "success"})

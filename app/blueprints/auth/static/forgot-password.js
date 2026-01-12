@@ -3,9 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = form.getAttribute("action");
 
     const risultato = document.querySelector("#result-error");
-    setTimeout(() => {
-        risultato.classList.add("hidden");
-    }, 5000);
+    if (risultato) {
+        setTimeout(() => {
+            risultato.classList.add("hidden");
+        }, 5000);
+    }
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();

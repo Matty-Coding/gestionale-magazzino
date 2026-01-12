@@ -1,6 +1,7 @@
-from .database import User, Fornitore
+from .database import User
 from app.extensions import db
 from app.utils.decorators import db_commiter
+from sqlalchemy import func
 
 class UserCRUD:
     def __init__(self):
@@ -38,7 +39,6 @@ class UserCRUD:
         Restituisce l'utente con l'email specificata.
         """
         return self.session.query(User).filter_by(email=email.lower()).first()
-    
 
     @db_commiter
     def update_username(self, user: User, username: str) -> User:
@@ -58,8 +58,24 @@ class UserCRUD:
 
 
     @db_commiter
-    def delete_user(self, user: User) -> None:
+    def delete_user(self, user: User):
         """
         Elimina l'utente dal db.
         """
         self.session.delete(user)
+
+    # ================================================
+    # ================= UTILITY ======================
+    # ================================================   
+    def get_users_by_role(self):
+        """
+        Restituisce il conteggio degli utenti diviso per ruolo.
+        """
+
+        return self.session.query(User.ruolo, func.count(User.id)).group_by(User.ruolo).all()
+    
+    def last_users(self) -> list[User]:
+        """
+        Restituisce gli ultimi 5 utenti.
+        """
+        return self.session.query(User).order_by(User.id.desc()).limit(5).all()

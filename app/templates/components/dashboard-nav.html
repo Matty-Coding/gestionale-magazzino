@@ -1,7 +1,54 @@
-<nav class="flex items-center">
-  <ul class="flex-1 flex justify-end items-center h-full gap-3 text-lg font-semibold">
-    <li><a href="{{ url_for('home.index') }}" class="flex gap-1 hover:font-bold"><i class="bi bi-house-fill"></i>Home</a></li>
-    <li><a href="#" class="flex gap-1 hover:font-bold"><i class="bi bi-person-fill"></i>Profilo</a></li>
-    <li><a href="{{ url_for('auth.logout') }}" class="flex gap-1 hover:font-bold"><i class="bi bi-box-arrow-right"></i>Logout</a></li>
-  </ul>
-</nav>
+<div class="relative group">
+  <div class="cursor-pointer flex gap-1 items-center">
+    <span id="username" class="mr-2 font-bold text-2xl">{{ current_user.username }}</span>
+    <i class="bi bi-chevron-down transition-transform duration-300 group-hover:rotate-180"></i>
+  </div>
+
+  <!-- Dropdown -->
+  <div
+    class="absolute top-6/12 right-0 w-max pt-2 invisible opacity-0 translate-y-2 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-50">
+    <div class="bg-black/90 backdrop-blur-md border border-white/50 rounded-lg shadow-xl overflow-hidden">
+      <ul class="flex flex-col rounded-lg">
+        <li id="open-username-modal" data-url="{{ url_for('auth.update_username') }}"
+          class="flex gap-2 px-4 py-1 cursor-pointer rounded-t-lg hover:bg-[#7d630f5e]">
+          <i class="bi bi-person"></i>
+          <span>Username</span>
+        </li>
+
+        <li>
+          <a href="{{ url_for('auth.update_password') }}"
+            class="flex gap-2 items-center px-4 py-1 hover:bg-[#7d630f5e]">
+            <i class="bi bi-key"></i>
+            Password
+          </a>
+        </li>
+
+        <li>
+          <a href="{{ url_for('auth.logout') }}"
+            class="flex gap-2 items-center px-4 py-1 rounded-b-lg hover:bg-[#7d630f5e]">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+  <!-- modal per modificare username -->
+  <div id="modal-username" class="fixed inset-0 z-100 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div
+      class="bg-[#2e201292] border border-white/30 p-6 rounded-2xl shadow-2xl w-80 flex flex-col gap-4 transform transition-all scale-95">
+      <h3 class="text-xl font-bold text-white">Nuovo Username</h3>
+      <input type="text" id="input-username"
+        class="bg-white/10 border border-white/20 rounded-lg p-2 text-white outline-none focus:ring-2 focus:ring-amber-500"
+        value="{{ current_user.username }}">
+      <small id="errore" class="hidden p-1 text-black bg-red-400 rounded"></small>
+      <div class="flex justify-end gap-2 text-sm">
+        <button id="annulla"
+          class="px-3 py-1 cursor-pointer text-white/70 hover:text-white hover:underline transition-colors">Annulla</button>
+        <button id="salva"
+          class="font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-2 px-4 cursor-pointer hover:scale-105 hover:bg-linear-to-bl transition-all duration-100 ease-in">Salva</button>
+      </div>
+    </div>
+  </div>

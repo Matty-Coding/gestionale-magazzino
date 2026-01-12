@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const flash = document.querySelector("#flash");
         const flashIcon = document.querySelector("#message-icon");
         const flashMessage = document.querySelector("#message-text");
+        flash.classList.add("hidden")
 
         switch (result.status) {
             case "success":
@@ -39,10 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 flashMessage.textContent = result.message;
                 flash.classList.remove("hidden");
 
-                setTimeout(() => {
-                    // redirect alla dashboard
-                    window.location.href = result.redirect;
-                }, 1000);
+                if (result.message === "Login avvenuto con successo") {
+                    setTimeout(() => {
+                        // redirect alla dashboard
+                        window.location.href = result.redirect;
+                    }, 1000);
+                }
 
                 break;
 

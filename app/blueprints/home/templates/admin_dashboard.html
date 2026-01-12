@@ -12,5 +12,93 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Hai il ruolo di amministratore, questa è la tua dashboard</h1>
+  <div class="w-full h-full border-2 grid grid-cols-3 p-5 gap-3">
+    <div class="col-span-2 grid grid-rows-3 gap-3">
+      
+      <!-- ultime registrazioni -->
+      <div class="bg-black/60 rounded-lg border row-span-2 flex flex-col gap-2">
+        <h2 class="text-3xl text-center">Ultime registrazioni</h2>
+        <div class="flex-1 bg-lime-500">
+          <table class="w-full h-full">
+            <thead>
+              <tr>
+                <th class="border border-collapse font-semibold text-xl">Username</th>
+                <th class="border border-collapse font-semibold text-xl">Email</th>
+                <th class="border border-collapse font-semibold text-xl">Ruolo</th>
+                <th class="border border-collapse font-semibold text-xl">Verificato</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for utente in ultimi_utenti %}
+                <tr>
+                  <td class="text-center border border-collapse">{{ utente.username }}</td>
+                  <td class="text-center border border-collapse">{{ utente.email }}</td>
+                  <td class="text-center border border-collapse">{{ utente.ruolo }}</td>
+                  <td class="text-center border border-collapse">
+                    {% if utente.verificato %}
+                      &check;
+                    {% else %}
+                      &cross;
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- conteggio utenti per ogni ruolo -->
+      <div class="bg-black/60 border rounded-lg flex flex-col gap-2">
+        <h2 class="text-3xl text-center">Conteggio utenti per ogni ruolo</h2>
+        <div class="flex-1 bg-lime-500">
+          <table class="w-full h-full">
+            <thead>
+              <tr>
+                <th class="border border-collapse font-semibold text-xl">Ruolo</th>
+                <th class="border border-collapse font-semibold text-xl">Conteggio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ruolo, count in totale_utenti_per_ruolo %}
+                <tr>
+                  <td class="text-center border border-collapse">{{ ruolo }}</td>
+                  <td class="text-center border border-collapse">{{ count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-black/60 border rounded-lg flex flex-col gap-2">
+      <h2 class="text-3xl text-center">In esaurimento</h2>
+      <div class="flex-1 bg-lime-500">
+        <table class="w-full h-full">
+          <thead>
+            <tr>
+              <th class="border border-collapse text-xl font-semibold">Codice</th>
+              <th class="border border-collapse text-xl font-semibold">Nome</th>
+              <th class="border border-collapse text-xl font-semibold">Quantità</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for prodotto in prodotti_in_esaurimento %}
+              <tr>
+                <td class="border border-collapse text-center">{{ prodotto.codice }}</td>
+                <td class="border border-collapse text-center">{{ prodotto.nome }}</td>
+                <td class="border border-collapse text-center">{{ prodotto.quantita }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{{ url_for('auth.static', filename='change-username.js') }}"></script>
+  <script src="{{ url_for('home.static', filename='dashboard-admin.js')}}"></script>
 {% endblock %}

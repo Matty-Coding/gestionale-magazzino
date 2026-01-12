@@ -31,6 +31,12 @@ class FornitoreCRUD:
         self.session.add(fornitore_obj)
         return fornitore_obj
 
+    def get_fornitore(self, user_id: int) -> Fornitore:
+        """
+        Restituisce il fornitore associato ad un utente esistente.
+        """
+        return self.session.query(Fornitore).filter_by(user_id=user_id).first()
+
     @db_commiter
     def update_fornitore(self, user_id: int, **kwargs) -> Fornitore:
         """

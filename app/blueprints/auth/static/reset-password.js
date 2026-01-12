@@ -22,14 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         switch (result.status) {
             case "success":
-                flash.classList.add("bg-green-400");
-                flashIcon.className = "bi-check-circle-fill";
-                flashMessage.textContent = result.message;
-                flash.classList.remove("hidden");
-
-                setTimeout(() => {
+                if (result.redirect) {
                     window.location.href = result.redirect;
-                }, 2000);
+                }
 
                 break;
 
