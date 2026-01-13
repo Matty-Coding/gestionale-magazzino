@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, SubmitField, TelField, SelectField
+from wtforms.fields import StringField, SubmitField, TelField, SelectField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Length, Regexp
 
 class FornitoreForm(FlaskForm):
@@ -37,6 +37,55 @@ class FornitoreForm(FlaskForm):
                 message="Il numero di telefono deve contenere solo numeri!"
             )
         ]
+    )
+
+    submit = SubmitField("Cambia")
+
+
+class ProdottoForm(FlaskForm):
+    codice = StringField(
+        "Codice",
+        render_kw = {"placeholder": "PROD-1234"},
+        validators = [
+            DataRequired(message="Devi inserire un codice!"),
+            Length(min=9, max=9, message="Il codice deve essere di 9 caratteri!"),
+        ]
+    )
+
+    nome = StringField(
+        "Nome",
+        render_kw = {"placeholder": "Prodotto 1"},
+        validators = [
+            DataRequired(message="Devi inserire un nome!"),
+            Length(min=1, max=50, message="Il nome deve essere di massimo 100 caratteri!"),
+            Regexp(
+                regex=r"^[A-Za-z0-9 ]+$",
+                message="Il nome deve contenere solo lettere, numeri e spazi!"
+            )
+        ]
+    )
+
+    descrizione = TextAreaField(
+        "Descrizione",
+        render_kw = {"placeholder": "Descrizione del prodotto..."}
+    )
+
+    prezzo = StringField(
+        "Prezzo",
+        render_kw = {"placeholder": "19.99"},
+        validators = [
+            DataRequired(message="Devi inserire un prezzo!"),
+            Length(min=3, max=7, message="Il prezzo deve essere almeno 3 caratteri e massimo 7!"),
+            Regexp(
+                regex=r"^[0-9]{1,4}(\.[0-9]{1,2})?$",
+                message="Il prezzo deve essere del tipo XX.XX!"
+            )
+        ]
+    )
+    
+    quantita = IntegerField(
+        "Quantità",
+        render_kw = {"placeholder": "10"}
     )
 
     submit = SubmitField("Cambia")

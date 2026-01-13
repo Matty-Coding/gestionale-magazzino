@@ -5,36 +5,45 @@
 {% endblock %}
 
 {% block header %}
-  <div class="flex h-full justify-between px-5">
+  <div class="flex items-center h-full justify-between px-5">
     {% include '/components/logo.html' %}
+    <h1 class="text-5xl py-2 text-center font-bold">
+      Dashboard {{ current_user.ruolo.capitalize() }}
+    </h1>
+    <a href="{{ url_for('home.admin_management') }}" 
+      class="bg-linear-to-b from-indigo-400 via-indigo-500 to-indigo-600 rounded-xl py-2 px-4 text-xl border hover:bg-linear-to-t transition-all duration-150 ease-in">
+      Effettua operazioni
+    </a>
     {% include '/components/dashboard-nav.html' %}
   </div>
 {% endblock %}
 
 {% block main %}
-  <div class="w-full h-full border-2 grid grid-cols-3 p-5 gap-3">
-    <div class="col-span-2 grid grid-rows-3 gap-3">
-      
-      <!-- ultime registrazioni -->
-      <div class="bg-black/60 rounded-lg border row-span-2 flex flex-col gap-2">
+  
+  <div class="w-full h-full grid grid-cols-3 p-5 gap-3">
+
+    <!-- ultime registrazioni -->
+    <div class="col-span-2 grid grid-rows-3 gap-3 h-full">
+      <div class="bg-black/60 rounded-t-lg border row-span-2 flex flex-col gap-2">
         <h2 class="text-3xl text-center">Ultime registrazioni</h2>
-        <div class="flex-1 bg-lime-500">
+        
+        <div class="flex-1">
           <table class="w-full h-full">
             <thead>
               <tr>
-                <th class="border border-collapse font-semibold text-xl">Username</th>
-                <th class="border border-collapse font-semibold text-xl">Email</th>
-                <th class="border border-collapse font-semibold text-xl">Ruolo</th>
-                <th class="border border-collapse font-semibold text-xl">Verificato</th>
+                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Username</th>
+                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Email</th>
+                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Ruolo</th>
+                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Verificato</th>
               </tr>
             </thead>
             <tbody>
               {% for utente in ultimi_utenti %}
-                <tr>
-                  <td class="text-center border border-collapse">{{ utente.username }}</td>
-                  <td class="text-center border border-collapse">{{ utente.email }}</td>
-                  <td class="text-center border border-collapse">{{ utente.ruolo }}</td>
-                  <td class="text-center border border-collapse">
+                <tr class="even:bg-amber-600/60 odd:bg-amber-500/60 hover:bg-rose-500/70 cursor-pointer transition-all duration-200 ease-in-out">
+                  <td class="border border-collapse text-center text-xl">{{ utente.username }}</td>
+                  <td class="border border-collapse text-center text-xl">{{ utente.email }}</td>
+                  <td class="border border-collapse text-center text-xl">{{ utente.ruolo }}</td>
+                  <td class="border border-collapse text-center text-xl">
                     {% if utente.verificato %}
                       &check;
                     {% else %}
@@ -49,21 +58,22 @@
       </div>
 
       <!-- conteggio utenti per ogni ruolo -->
-      <div class="bg-black/60 border rounded-lg flex flex-col gap-2">
+      <div class="bg-black/60 border rounded-t-lg flex flex-col gap-2">
         <h2 class="text-3xl text-center">Conteggio utenti per ogni ruolo</h2>
-        <div class="flex-1 bg-lime-500">
+        
+        <div class="flex-1">
           <table class="w-full h-full">
             <thead>
               <tr>
-                <th class="border border-collapse font-semibold text-xl">Ruolo</th>
-                <th class="border border-collapse font-semibold text-xl">Conteggio</th>
+                <th class="bg-sky-900/70 border border-collapse font-bold text-2xl">Ruolo</th>
+                <th class="bg-sky-900/70 border border-collapse font-bold text-2xl">Conteggio</th>
               </tr>
             </thead>
             <tbody>
               {% for ruolo, count in totale_utenti_per_ruolo %}
-                <tr>
-                  <td class="text-center border border-collapse">{{ ruolo }}</td>
-                  <td class="text-center border border-collapse">{{ count }}</td>
+                <tr class="even:bg-sky-600/60 odd:bg-sky-500/60 hover:bg-indigo-600/70 cursor-pointer transition-all duration-200 ease-in-out">
+                  <td class="text-center border border-collapse text-xl">{{ ruolo }}</td>
+                  <td class="text-center border border-collapse text-xl">{{ count }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -72,23 +82,25 @@
       </div>
     </div>
 
-    <div class="bg-black/60 border rounded-lg flex flex-col gap-2">
+    <!-- prodotti in esaurimento -->
+    <div class="bg-black/60 h-full overflow-y-scroll border rounded-t-lg flex flex-col gap-2">
       <h2 class="text-3xl text-center">In esaurimento</h2>
-      <div class="flex-1 bg-lime-500">
+      
+      <div class="flex-1">
         <table class="w-full h-full">
           <thead>
             <tr>
-              <th class="border border-collapse text-xl font-semibold">Codice</th>
-              <th class="border border-collapse text-xl font-semibold">Nome</th>
-              <th class="border border-collapse text-xl font-semibold">Quantità</th>
+              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Codice</th>
+              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Nome</th>
+              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Quantità</th>
             </tr>
           </thead>
           <tbody>
             {% for prodotto in prodotti_in_esaurimento %}
-              <tr>
-                <td class="border border-collapse text-center">{{ prodotto.codice }}</td>
-                <td class="border border-collapse text-center">{{ prodotto.nome }}</td>
-                <td class="border border-collapse text-center">{{ prodotto.quantita }}</td>
+              <tr class="even:bg-lime-500/60 odd:bg-lime-600/60 hover:bg-emerald-500/70 cursor-pointer transition-all duration-200 ease-in-out">
+                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.codice }}</td>
+                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.nome }}</td>
+                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.quantita }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -100,5 +112,4 @@
 
 {% block javascript %}
   <script src="{{ url_for('auth.static', filename='change-username.js') }}"></script>
-  <script src="{{ url_for('home.static', filename='dashboard-admin.js')}}"></script>
 {% endblock %}

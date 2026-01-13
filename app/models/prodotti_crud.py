@@ -7,12 +7,11 @@ class ProdottoCrud:
         self.session = db.session
 
     @db_commiter
-    def create_prodotto(self, **kwargs):
+    def create_prodotto(self, **kwargs) -> Prodotto:
         """
         Crea un nuovo prodotto nel db e restituisce l'oggetto `Prodotto`.
         """
-
-        prodotto_obj = Prodotto(**kwargs)
+        prodotto_obj = Prodotto(**kwargs, categoria_id=4)
         self.session.add(prodotto_obj)
         return prodotto_obj
     
@@ -21,6 +20,12 @@ class ProdottoCrud:
         Restituisce il prodotto con il codice specificato.
         """
         return self.session.query(Prodotto).filter_by(codice=codice).first()
+    
+    def get_prodotto_by_id(self, id: int) -> Prodotto:
+        """
+        Restituisce il prodotto con l'id specificato.
+        """
+        return self.session.query(Prodotto).filter_by(id=id).first()
 
     def get_all_prodotti(self) -> list[Prodotto]:
         """

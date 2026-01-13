@@ -1,0 +1,20 @@
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Ruolo</th>
+      <th>Verificato</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for utente in utenti %}
+    <tr>
+      <td>{{ utente.username }}</td>
+      <td>{{ utente.email }}</td>
+      <td>{{ utente.ruolo }}</td>
+      <td>{% if utente.verificato %}&check;{% else %}&cross;{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

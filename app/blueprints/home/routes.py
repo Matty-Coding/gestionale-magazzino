@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, url_for, redirect, jsonify
 from flask_login import current_user, login_required
-from .forms import FornitoreForm
+from .forms import FornitoreForm, ProdottoForm
 from app.models.fornitore_crud import FornitoreCRUD
 from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
+from app.models.database import Prodotto
+from app.utils.decorators import admin_required
 
 
 home_bp = Blueprint(
@@ -23,7 +25,6 @@ prodottocrud = ProdottoCrud()
 def index():
     return render_template("index.html")
 
-
 @home_bp.route("/dashboard")
 @login_required
 def dashboard():
@@ -31,13 +32,17 @@ def dashboard():
         case "FORNITORE":
             fornitore_obj = fornitorecrud.get_fornitore(user_id=current_user.id)
             form = FornitoreForm(obj=fornitore_obj)
-            prodotti = fornitore_obj.prodotti
-            # totale_pezzi = sum(f for prodotto in prodotti)
+
+            prodotti_fornitore = fornitore_obj.prodotti
+            totale_prodotti = len(prodotti_fornitore)
+            totale_pezzi = sum(fornitore_prodotto.prodotto.quantita for fornitore_prodotto in prodotti_fornitore)
+
             return render_template(
                 "fornitore_dashboard.html", 
                 form=form, 
-                prodotti=prodotti, 
-                # totale_pezzi=totale_pezzi
+                prodotti=prodotti_fornitore,
+                totale_prodotti=totale_prodotti, 
+                totale_pezzi=totale_pezzi
                 )
         
         case "CLIENTE":
@@ -84,4 +89,106 @@ def update_fornitore_data():
             telefono=data.get("telefono")
         )
     
+    return jsonify({"status": "success"})
+
+
+@home_bp.route("/prodotti")
+def prodotti():
+    pagina = request.args.get("page", 1, type=int)
+    prodotti = Prodotto.query.paginate(page=pagina, per_page=5)
+
+    if request.headers.get("Accept") == "application/json":
+        return jsonify({
+        "html": render_template("blocco-prodotti.html", prodotti=prodotti),
+        "pagina_attuale": prodotti.page,
+        "totale_pagine": prodotti.pages,
+        "precedente": prodotti.prev_num,
+        "successiva": prodotti.next_num 
+    })
+
+    return render_template("prodotti.html", prodotti=prodotti)
+
+
+@home_bp.route("/admin/management", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_management():
+    form = ProdottoForm()
+    return render_template("management.html", form=form)
+
+
+@home_bp.route("/admin/management/prodotti")
+@login_required
+@admin_required
+def get_table_prodotti():
+    prodotti = prodottocrud.get_all_prodotti()
+    return jsonify({
+        "html": render_template("tabella-prodotti.html", prodotti=prodotti)
+    })
+
+
+@home_bp.route("/admin/management/utenti")
+@login_required
+@admin_required
+def get_table_utenti():
+    utenti = usercrud.get_all_users()
+    return jsonify({
+        "html": render_template("tabella-utenti.html", utenti=utenti)
+    })
+
+
+@home_bp.route("/admin/management/prodotto/aggiungi", methods=["POST"])
+@login_required
+@admin_required
+def aggiungi_prodotto():
+    data = request.get_json()
+    form_prodotto = ProdottoForm(data=data)
+    
+    if form_prodotto.validate():
+        if prodottocrud.get_prodotto(data.get("codice")):
+            return jsonify({
+                "status": "error", 
+                "message": "Prodotto già presente"
+                })
+        
+        prodottocrud.create_prodotto(
+            codice=data.get("codice"),
+            nome=data.get("nome"),
+            descrizione=data.get("descrizione") or "Nessuna descrizione per questo prodotto",
+            prezzo=float(data.get("prezzo")),
+            quantita=int(data.get("quantita"))
+        )
+        return jsonify({"status": "success"})
+    
+    return jsonify({"status": "error", "message": form_prodotto.errors})
+
+
+@home_bp.route("/admin/management/prodotto/modifica/<int:prodotto_id>", methods=["POST"])
+@login_required
+@admin_required
+def modifica_prodotto(prodotto_id):
+    data = request.get_json()
+    form_prodotto = ProdottoForm(data=data)
+    
+    if form_prodotto.validate():
+        prodotto_obj = prodottocrud.get_prodotto_by_id(prodotto_id)
+        prodottocrud.update_prodotto(
+            prodotto=prodotto_obj,
+            codice=data.get("codice"),
+            nome=data.get("nome"),
+            descrizione=data.get("descrizione") or "Nessuna descrizione per questo prodotto",
+            prezzo=float(data.get("prezzo")),
+            quantita=int(data.get("quantita"))
+        )
+        return jsonify({"status": "success"})
+    
+    return jsonify({"status": "error", "message": form_prodotto.errors})
+    
+
+@home_bp.route("/admin/management/prodotto/elimina/<int:prodotto_id>", methods=["POST", "DELETE"])
+@login_required
+@admin_required
+def elimina_prodotto(prodotto_id):
+    prodotto_obj = prodottocrud.get_prodotto_by_id(prodotto_id)
+    prodottocrud.delete_prodotto(prodotto=prodotto_obj)
     return jsonify({"status": "success"})

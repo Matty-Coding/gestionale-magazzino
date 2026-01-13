@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Magazzino | Prodotti
+{% endblock %}
+
+{% block header %}
+<div class="flex h-full justify-between px-5">
+  {% include '/components/logo.html' %}
+  <h1 class="text-5xl py-2 text-center font-bold">I nostri prodotti</h1>
+  {% include '/components/navbar.html' %}
+</div>
+{% endblock %}
+
+{% block main %}
+  <div class="flex items-center mt-5 h-11/12">
+
+    <!-- freccia sinistra -->
+    <div id="precedente" class="p-3">
+      <a href="?page={{ prodotti.prev_num }}">
+        <i class="bi bi-chevron-compact-left text-7xl"></i>
+      </a>
+    </div>
+
+    <!-- container dinamico render_template + javascript -->
+    <div id="container-prodotti" class="flex-1 h-full overflow-y-scroll"></div>
+
+    <!-- freccia destra -->
+    <div id="successiva" class="p-3">
+      <a href="?page={{ prodotti.next_num }}">
+        <i class="bi bi-chevron-compact-right text-7xl"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <div id="paginazione" class="-translate-y-4 text-center text-2xl font-semibold">Pagina {{ prodotti.page }} di {{ prodotti.pages }}</div>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{{ url_for('home.static', filename='prodotti.js')}}"></script>
+{% endblock %}

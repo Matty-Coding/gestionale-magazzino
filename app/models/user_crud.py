@@ -79,3 +79,10 @@ class UserCRUD:
         Restituisce gli ultimi 5 utenti.
         """
         return self.session.query(User).order_by(User.id.desc()).limit(5).all()
+
+
+    def get_all_users(self) -> list[User]:
+        """
+        Restituisce tutti gli utenti.
+        """
+        return self.session.query(User).all()
