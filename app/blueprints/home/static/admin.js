@@ -1,124 +1,124 @@
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("modal");
-    const form = document.getElementById("form");
-    const modalTitle = document.getElementById("modal-title");
+    const formContainer = document.getElementById("form-container");
+    const formElement = document.getElementById("form");
     const tableContainer = document.getElementById("table-container");
+    const modalTitle = document.getElementById("modal-title");
     const nomeTabella = document.getElementById("nome-tabella");
-    const listaTabelle = document.getElementById("lista-tabelle");
 
-    const btnApriAggiungi = document.getElementById("apri-modal");
-    const btnAnnulla = document.getElementById("annulla");
+    // variabili globali per dinamicità totale
+    let currentEndpoint = "";
+    let currentResourceType = "";
 
-    // modale di aggiunta/modifica (toggle)
+    // toggle della modale
     const toggleModal = (show = true) => {
         if (show) {
             modal.classList.replace("hidden", "flex");
         } else {
             modal.classList.replace("flex", "hidden");
-            form.reset();
-            form.removeAttribute("data-mode");
-            form.removeAttribute("data-id");
+            formElement.reset();
+            formElement.removeAttribute("data-mode");
+            formElement.removeAttribute("data-id");
         }
     };
 
-    // apertura modale
-    btnApriAggiungi.addEventListener("click", () => {
-        modalTitle.innerText = "Aggiungi Prodotto";
-        toggleModal(true);
-    });
 
-    // chiusura modale
-    btnAnnulla.addEventListener("click", () => toggleModal(false));
+    // caricamento dinamico della risorsa
+    const caricaRisorsa = async (tipo) => {
+        currentResourceType = tipo;
+        nomeTabella.textContent = tipo.toUpperCase();
 
-    // loading dinamico delle tabelle 
-    const caricaTabella = async (tipo) => {
-        nomeTabella.textContent = tipo;
-        const url = `/admin/management/${tipo}`;
-        const response = await fetch(url, {
-            method: "GET",
-            headers: { "Accept": "application/json" }
-        });
+        try {
+            // fetch dinamico all'endpoint corrispondente
+            const response = await fetch(`/admin/api/load/${tipo}`);
+            const data = await response.json();
 
-        const data = await response.json();
-        tableContainer.innerHTML = data.html;
+            if (data.status === "success") {
+                // display dinamico tabella selezionata
+                tableContainer.innerHTML = data.table_html;
+
+                // display dinamico form correlato
+                formContainer.innerHTML = data.form_html;
+
+                // update della variabile dell'endpoint
+                currentEndpoint = data.endpoint;
+            } else {
+                console.error(data.message || "Errore nel caricamento della risorsa");
+            }
+        } catch (error) {
+            console.error("Errore fetch:", error);
+        }
     };
 
-    listaTabelle.addEventListener("click", (e) => {
+    // selezione tabella con event delegation sula lista
+    document.getElementById("lista-tabelle").addEventListener("click", (e) => {
         const item = e.target.closest("li");
-        if (item) {
+        if (item && item.hasAttribute("data-tipo")) {
             const tipo = item.getAttribute("data-tipo");
-            caricaTabella(tipo);
+            caricaRisorsa(tipo);
         }
     });
 
-    // delegazione evento sul container della tabella
+    // delegazione eventi modifica/elimina sul container della tabella
     tableContainer.addEventListener("click", async (e) => {
-        const btnEdit = e.target.closest("#btn-edit");
-        const btnDelete = e.target.closest("#btn-delete");
+        const btnEdit = e.target.closest(".btn-edit");
+        const btnDelete = e.target.closest(".btn-delete");
 
-        // modifica prodotto
+        // modifica elemento dinamica
         if (btnEdit) {
-            const d = btnEdit.dataset;
+            const id = btnEdit.dataset.id;
+            const rowData = JSON.parse(btnEdit.dataset.row);
 
-            modalTitle.innerText = "Modifica Prodotto";
-            form.setAttribute("data-mode", "modifica");
-            form.setAttribute("data-id", d.id);
+            modalTitle.textContent = `Modifica ${currentEndpoint}`;
+            formElement.setAttribute("data-mode", "modifica");
+            formElement.setAttribute("data-id", id);
 
-            // precomilazione form di modifica prima id mostrarlo
-            document.getElementById("form-codice").value = d.codice;
-            document.getElementById("form-nome").value = d.nome;
-            document.getElementById("form-descrizione").value = d.descrizione;
-            document.getElementById("form-prezzo").value = d.prezzo;
-            document.getElementById("form-quantita").value = d.quantita;
-
+            // compilazione dinamica del form in fase di modifica
+            for (const [key, value] of Object.entries(rowData)) {
+                const input = formElement.querySelector(`[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
             toggleModal(true);
         }
 
-        // eliminazione prodotto
+        // eliminazione elemento dinamico
         if (btnDelete) {
             const id = btnDelete.dataset.id;
-            const nome = btnDelete.dataset.nome;
-
-            if (confirm(`Sei sicuro di voler eliminare definitivamente "${nome}"?`)) {
-                try {
-                    const response = await fetch(`/admin/management/prodotto/elimina/${id}`, {
-                        method: "DELETE",
-                        headers: {
-                            "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content
-                        }
-                    });
-                    const result = await response.json();
-
-                    if (result.status === "success") {
-                        caricaTabella(nomeTabella.textContent.toLowerCase());
-                    } else {
-                        alert("Errore durante l'eliminazione: " + result.message);
-                    }
-                } catch (error) {
-                    console.error("Errore fetch eliminazione:", error);
-                }
+            if (confirm("Sei sicuro di voler eliminare questo elemento?")) {
+                await fetch(`/admin/management/${currentEndpoint}/elimina/${id}`, {
+                    method: "DELETE",
+                    headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content }
+                });
+                // caricaRisorsa(currentResourceType); reload page
             }
         }
     });
 
-    // submit form dinamico
-    form.addEventListener("submit", async (e) => {
+    // apertura modale
+    document.getElementById("apri-modal").addEventListener("click", () => {
+        modalTitle.textContent = `Aggiungi ${currentEndpoint}`;
+        toggleModal(true);
+    });
+
+    document.getElementById("annulla").addEventListener("click", () => toggleModal(false));
+
+    // invio del form al server (POST)
+    formElement.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const mode = form.getAttribute("data-mode");
-        const id = form.getAttribute("data-id");
+        // Recupero dinamico dei dati dal form
+        const formData = new FormData(formElement);
 
-        const url = mode === "modifica"
-            ? `/admin/management/prodotto/modifica/${id}`
-            : "/admin/management/prodotto/aggiungi";
+        // creazione json object con i dati del form
+        const payload = Object.fromEntries(formData.entries());
 
-        const payload = {
-            codice: document.getElementById("form-codice").value,
-            nome: document.getElementById("form-nome").value,
-            descrizione: document.getElementById("form-descrizione").value,
-            prezzo: document.getElementById("form-prezzo").value,
-            quantita: document.getElementById("form-quantita").value
-        };
+        const mode = formElement.getAttribute("data-mode");
+        const id = formElement.getAttribute("data-id");
+
+        const baseUrl = `/admin/management/${currentEndpoint}`;
+        const url = mode === "modifica" ? `${baseUrl}/modifica/${id}` : `${baseUrl}/aggiungi`;
 
         try {
             const response = await fetch(url, {
@@ -134,13 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result.status === "success") {
                 toggleModal(false);
-                caricaTabella(nomeTabella.textContent.toLowerCase());
+                caricaRisorsa(currentResourceType);
             } else {
-                alert("Errore: " + (result.message || "Dati non validi"));
+                alert("Errore: " + JSON.stringify(result.message));
             }
         } catch (error) {
-            console.error("Errore salvataggio:", error);
+            console.error("Errore submit:", error);
         }
     });
 
+    caricaRisorsa("prodotti");
 });

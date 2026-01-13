@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, url_for, redirect, jsonify
+from flask import Blueprint, render_template, request, jsonify
 from flask_login import current_user, login_required
-from .forms import FornitoreForm, ProdottoForm
+from .forms import FornitoreForm, ProdottoForm, UtenteForm
 from app.models.fornitore_crud import FornitoreCRUD
 from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
@@ -109,34 +109,54 @@ def prodotti():
     return render_template("prodotti.html", prodotti=prodotti)
 
 
-@home_bp.route("/admin/management", methods=["GET", "POST"])
+MANAGEMENT_CONFIG = {
+    "prodotti": {
+        "crud_get": prodottocrud.get_all_prodotti,
+        "form_class": ProdottoForm,
+        "template_table": "tabella-prodotti.html",
+        "api_endpoint": "prodotto"
+    },
+    "utenti": {
+        "crud_get": usercrud.get_all_users,
+        "form_class": UtenteForm,
+        "template_table": "tabella-utenti.html",
+        "api_endpoint": "utente"    
+    }
+}
+
+@home_bp.route("/admin/api/load/<resource_type>", methods=["GET"])
+@login_required
+@admin_required
+def get_resource_data(resource_type):
+    config = MANAGEMENT_CONFIG.get(resource_type)
+    if not config:
+        return jsonify({"status": "error", "message": "Risorsa non trovata"}), 404
+
+    items = config["crud_get"]()
+    
+    form = config["form_class"]()
+
+    table_html = render_template(config["template_table"], items=items)
+    
+    form_html = render_template("base-form.html", form=form)
+
+    return jsonify({
+        "status": "success",
+        "table_html": table_html,
+        "form_html": form_html,
+        "endpoint": config["api_endpoint"] 
+    })
+
+@home_bp.route("/admin/management")
 @login_required
 @admin_required
 def admin_management():
-    form = ProdottoForm()
-    return render_template("management.html", form=form)
+    return render_template("management.html")
 
 
-@home_bp.route("/admin/management/prodotti")
-@login_required
-@admin_required
-def get_table_prodotti():
-    prodotti = prodottocrud.get_all_prodotti()
-    return jsonify({
-        "html": render_template("tabella-prodotti.html", prodotti=prodotti)
-    })
-
-
-@home_bp.route("/admin/management/utenti")
-@login_required
-@admin_required
-def get_table_utenti():
-    utenti = usercrud.get_all_users()
-    return jsonify({
-        "html": render_template("tabella-utenti.html", utenti=utenti)
-    })
-
-
+# ==========================================
+# =============  PRODOTTI  =================
+# ==========================================
 @home_bp.route("/admin/management/prodotto/aggiungi", methods=["POST"])
 @login_required
 @admin_required
@@ -192,3 +212,9 @@ def elimina_prodotto(prodotto_id):
     prodotto_obj = prodottocrud.get_prodotto_by_id(prodotto_id)
     prodottocrud.delete_prodotto(prodotto=prodotto_obj)
     return jsonify({"status": "success"})
+
+
+
+# ==========================================
+# ==============  UTENTI  ==================
+# ==========================================

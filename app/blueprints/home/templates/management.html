@@ -81,41 +81,7 @@ Admin | Management
       <h2 id="modal-title" class="text-2xl font-bold text-lime-500 mb-6 uppercase">Aggiungi Prodotto</h2>
 
       <form id="form" class="space-y-4">
-        {{ form.hidden_tag() }}
-
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col">
-            {{ form.codice.label(class="text-xs text-gray-500 mb-1") }}
-            {{ form.codice(class="bg-black border border-white/20 rounded p-2 text-white", id="form-codice") }}
-          </div>
-          <div class="flex flex-col">
-            {{ form.nome.label(class="text-xs text-gray-500 mb-1") }}
-            {{ form.nome(class="bg-black border border-white/20 rounded p-2 text-white", id="form-nome") }}
-          </div>
-        </div>
-
-        <div class="flex flex-col">
-          {{ form.descrizione.label(class="text-xs text-gray-500 mb-1") }}
-          {{ form.descrizione(class="bg-black border border-white/20 rounded p-2 text-white h-24",
-          id="form-descrizione") }}
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col">
-            {{ form.prezzo.label(class="text-xs text-gray-500 mb-1") }}
-            {{ form.prezzo(class="bg-black border border-white/20 rounded p-2 text-white", id="form-prezzo") }}
-          </div>
-          <div class="flex flex-col">
-            {{ form.quantita.label(class="text-xs text-gray-500 mb-1") }}
-            {{ form.quantita(class="bg-black border border-white/20 rounded p-2 text-white", id="form-quantita") }}
-          </div>
-        </div>
-
-        <div class="flex justify-end gap-4 mt-6">
-          <button id="annulla" type="button" class="text-gray-400 hover:text-white">Annulla</button>
-          <button id="salva" type="submit"
-            class="bg-lime-600 text-black px-6 py-2 rounded font-bold hover:bg-lime-500">Salva</button>
-        </div>
+        <div id="form-container"></div>
       </form>
     </div>
   </div>
