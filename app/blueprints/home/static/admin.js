@@ -91,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     method: "DELETE",
                     headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]").content }
                 });
-                // caricaRisorsa(currentResourceType); reload page
+                // refresh tabella per mostrare aggiornamento realtime
+                caricaRisorsa(currentResourceType);
             }
         }
     });
@@ -102,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleModal(true);
     });
 
+    // chiusura modale, tasto annulla
     document.getElementById("annulla").addEventListener("click", () => toggleModal(false));
 
     // invio del form al server (POST)

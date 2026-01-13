@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, SubmitField, TelField, SelectField, TextAreaField, IntegerField, EmailField, BooleanField, RadioField
+from wtforms.fields import StringField, SubmitField, TelField, SelectField, TextAreaField, IntegerField, EmailField, BooleanField, RadioField, PasswordField
 from wtforms.validators import DataRequired, Length, Regexp, Email
 
 class FornitoreForm(FlaskForm):
@@ -115,6 +115,18 @@ class UtenteForm(FlaskForm):
         ]
     )
     
+    password = PasswordField(
+        "Password",
+        render_kw = {"placeholder": "••••••••"},
+        validators = [
+            DataRequired(message="Devi inserire una password!"),
+            Regexp(
+                regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@!%*#?&.])[A-Za-z0-9@!%*#?&.]{8,}$",
+                message="La password deve essere di almeno 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale!",
+            )
+        ]
+    )
+
     ruolo = RadioField(
         "Ruolo",
         choices=[("ADMIN", "ADMIN"), ("CLIENTE", "CLIENTE"), ("FORNITORE", "FORNITORE")],

@@ -6,6 +6,7 @@ from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
 from app.models.database import Prodotto
 from app.utils.decorators import admin_required
+from app.services.mail_sender import send_email
 
 
 home_bp = Blueprint(
@@ -205,7 +206,7 @@ def modifica_prodotto(prodotto_id):
     return jsonify({"status": "error", "message": form_prodotto.errors})
     
 
-@home_bp.route("/admin/management/prodotto/elimina/<int:prodotto_id>", methods=["POST", "DELETE"])
+@home_bp.route("/admin/management/prodotto/elimina/<int:prodotto_id>", methods=["DELETE"])
 @login_required
 @admin_required
 def elimina_prodotto(prodotto_id):
@@ -213,8 +214,52 @@ def elimina_prodotto(prodotto_id):
     prodottocrud.delete_prodotto(prodotto=prodotto_obj)
     return jsonify({"status": "success"})
 
-
-
 # ==========================================
 # ==============  UTENTI  ==================
 # ==========================================
+@home_bp.route("/admin/management/utente/aggiungi", methods=["POST"])
+@login_required
+@admin_required
+def aggiungi_utente():
+    data = request.get_json()
+    form_utente = UtenteForm(data=data)
+    
+    if form_utente.validate():
+        user_obj = usercrud.get_user_by_email(data.get("email"))
+        if user_obj:
+            return jsonify({
+                "status": "error",
+                "message": "Utente già presente"
+            })
+        
+        usercrud.create_user(
+            username = data.get("username"),
+            email = data.get("email"),
+            password = data.get("password"),
+            ruolo = data.get("ruolo"),
+            verificato = bool(data.get("verificato"))
+        )
+
+        send_email(
+            email=data.get("email"),
+            subject="Credenziali per il login con ruolo ADMIN",
+            message=f"<h2>Suggeriamo di cambiare subito le credenziali appena effettuato il primo login!</h2><p><strong>Username:</strong> {data.get('username')}<br><strong>Email:</strong> {data.get('email')}<br><strong>Password:</strong> {data.get('password')}</p>"
+        )       
+
+        return jsonify({"status": "success"})
+    
+    return jsonify({"status": "error", "message": form_utente.errors})
+
+@home_bp.route("/admin/management/utente/modifica/<int:id>", methods=["POST"])
+@login_required
+@admin_required
+def modifica_utente(id):
+    # Logica modifica utente
+    return jsonify({"status": "success"})
+
+@home_bp.route("/admin/management/utente/elimina/<int:id>", methods=["DELETE"])
+@login_required
+@admin_required
+def elimina_utente(id):
+    # Logica elimina utente
+    return jsonify({"status": "success"})

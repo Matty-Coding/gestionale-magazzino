@@ -1,14 +1,16 @@
 {{ form.hidden_tag() }} 
 <div class="space-y-4">
   {% for field in form %}
-    <div class="flex flex-col">
-        <label class="text-xs text-gray-500 mb-1 font-bold uppercase">{{ field.label.text }}</label>
-        
-        {{ field(class="bg-black border border-white/20 rounded p-2 text-white focus:border-lime-500 outline-none w-full placeholder-gray-600", placeholder=field.label.text) }}
-        
-        {% if field.errors %}
-            <span class="text-red-500 text-xs mt-1">{{ field.errors[0] }}</span>
-        {% endif %}
-    </div>
+      {% if field.type != 'CSRFTokenField' and field.type != 'HiddenField' %}
+      <div class="flex flex-col">
+          <label class="text-xs text-gray-500 mb-1 font-bold uppercase">{{ field.label.text }}</label>
+          
+          {{ field(class="bg-black border border-white/20 rounded p-2 text-white focus:border-lime-500 outline-none w-full placeholder-gray-600", placeholder=field.label.text) }}
+          
+          {% if field.errors %}
+              <span class="text-red-500 text-xs mt-1">{{ field.errors[0] }}</span>
+          {% endif %}
+      </div>
+      {% endif %}
   {% endfor %}
 </div>

@@ -9,8 +9,9 @@
     </tr>
   </thead>
   <tbody class="text-gray-300">
-    {% for prodotto in items %} <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-        <td class="p-4 font-mono text-lime-400">{{ prodotto.codice }}</td>
+    {% for prodotto in items %} 
+    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+        <td class="p-4">{{ prodotto.codice }}</td>
         <td class="p-4">{{ prodotto.nome }}</td>
         <td class="p-4">{{ prodotto.prezzo }}€</td>
         <td class="p-4">{{ prodotto.quantita }}</td>

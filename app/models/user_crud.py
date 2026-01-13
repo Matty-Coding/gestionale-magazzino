@@ -9,8 +9,7 @@ class UserCRUD:
 
     @db_commiter
     def create_user(
-        self, username: str, email: str, password: str, ruolo: str | None
-        ) -> User:
+        self, username: str, email: str, password: str, ruolo: str | None, verificato: bool = False) -> User:
         """
         Crea un nuovo utente nel db e restituisce l'oggetto `User`.
         """
@@ -18,7 +17,8 @@ class UserCRUD:
         user_obj = User(
             username=username,
             email=email.lower(),
-            ruolo=ruolo
+            ruolo=ruolo,
+            verificato=verificato
         )
 
         user_obj.set_password(password)
