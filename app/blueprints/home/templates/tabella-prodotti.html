@@ -9,28 +9,26 @@
     </tr>
   </thead>
   <tbody class="text-gray-300">
-    {% for prodotto in prodotti %}
+    {% for prodotto in items %} 
     <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-      <td class="p-4 font-mono text-lime-400">{{ prodotto.codice }}</td>
-      <td class="p-4">{{ prodotto.nome }}</td>
-      <td class="p-4">{{ prodotto.prezzo }}€</td>
-      <td class="p-4">{{ prodotto.quantita }}</td>
-      <td class="p-4 text-center space-x-3">
-        <button id="btn-edit" text-blue-400 hover:scale-110 transition-transform cursor-pointer" 
-        data-id="{{ prodotto.id }}"
-        data-codice="{{ prodotto.codice }}"
-        data-nome="{{ prodotto.nome }}"
-        data-descrizione="{{ prodotto.descrizione }}"
-        data-prezzo="{{ prodotto.prezzo }}"
-        data-quantita="{{ prodotto.quantita }}">
-          <i class="bi bi-pencil-square"></i>
-        </button>
-        <button id="btn-delete" text-red-400 hover:scale-110 transition-transform cursor-pointer" 
-                data-id="{{ prodotto.id }}"
-                data-nome="{{ prodotto.nome }}">
-          <i class="bi bi-trash"></i>
-        </button>
-      </td>
+        <td class="p-4">{{ prodotto.codice }}</td>
+        <td class="p-4">{{ prodotto.nome }}</td>
+        <td class="p-4">{{ prodotto.prezzo }}€</td>
+        <td class="p-4">{{ prodotto.quantita }}</td>
+        <td class="p-4 text-center space-x-3">
+            
+            <button class="btn-edit text-blue-400 hover:scale-110 transition-transform cursor-pointer"
+                    data-id="{{ prodotto.id }}"
+                    data-row='{"codice": "{{ prodotto.codice }}", "nome": "{{ prodotto.nome }}", "descrizione": "{{ prodotto.descrizione }}", "prezzo": "{{ prodotto.prezzo }}", "quantita": "{{ prodotto.quantita }}"}'>
+                <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn-delete text-red-400 hover:scale-110 transition-transform cursor-pointer" 
+                    data-id="{{ prodotto.id }}"
+                    data-nome="{{ prodotto.nome }}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
     </tr>
     {% endfor %}
   </tbody>

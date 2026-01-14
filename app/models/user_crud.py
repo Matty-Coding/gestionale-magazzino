@@ -9,8 +9,7 @@ class UserCRUD:
 
     @db_commiter
     def create_user(
-        self, username: str, email: str, password: str, ruolo: str | None
-        ) -> User:
+        self, username: str, email: str, password: str, ruolo: str | None, verificato: bool = False) -> User:
         """
         Crea un nuovo utente nel db e restituisce l'oggetto `User`.
         """
@@ -18,7 +17,8 @@ class UserCRUD:
         user_obj = User(
             username=username,
             email=email.lower(),
-            ruolo=ruolo
+            ruolo=ruolo,
+            verificato=verificato
         )
 
         user_obj.set_password(password)
@@ -48,7 +48,6 @@ class UserCRUD:
         setattr(user, "username", username)
         return user
     
-
     @db_commiter
     def reset_password(self, user: User, password: str) -> None:
         """
@@ -56,6 +55,14 @@ class UserCRUD:
         """
         user.set_password(password)
 
+    # admin panel
+    @db_commiter
+    def toggle_verification(self, user: User, verificato: bool) -> None:
+        """
+        Attiva o disattiva la verifica dell'utente.
+        """
+        setattr(user, "verificato", verificato)
+        return
 
     @db_commiter
     def delete_user(self, user: User):
