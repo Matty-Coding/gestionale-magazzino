@@ -10,6 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentEndpoint = "";
     let currentResourceType = "";
 
+    // disabilitazione dinamica dei campi del form
+    const setFormFieldsState = (disableAllExceptVerification = false) => {
+        const inputs = formElement.querySelectorAll("input, select");
+        inputs.forEach(input => {
+            if (input.name === "csrf_token" || input.name === "verificato") return;
+
+            if (disableAllExceptVerification) {
+                input.disabled = true;
+                input.classList.add("opacity-50", "cursor-not-allowed");
+            } else {
+                input.disabled = false;
+                input.classList.remove("opacity-50", "cursor-not-allowed");
+            }
+        });
+    };
+
     // toggle della modale
     const toggleModal = (show = true) => {
         if (show) {
@@ -73,11 +89,22 @@ document.addEventListener("DOMContentLoaded", () => {
             formElement.setAttribute("data-mode", "modifica");
             formElement.setAttribute("data-id", id);
 
+            // se la tabella è degli utenti, disabilita tutti i campi
+            if (currentResourceType === "utenti") {
+                setFormFieldsState(true);
+            } else {
+                setFormFieldsState(false);
+            }
+
             // compilazione dinamica del form in fase di modifica
             for (const [key, value] of Object.entries(rowData)) {
                 const input = formElement.querySelector(`[name="${key}"]`);
                 if (input) {
-                    input.value = value;
+                    if (input.type === "checkbox") {
+                        input.checked = value;
+                    } else {
+                        input.value = value;
+                    }
                 }
             }
             toggleModal(true);
@@ -100,6 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // apertura modale
     document.getElementById("apri-modal").addEventListener("click", () => {
         modalTitle.textContent = `Aggiungi ${currentEndpoint}`;
+        // modale di aggiunta, tutti i campi abilitati
+        setFormFieldsState(false);
         toggleModal(true);
     });
 
@@ -115,6 +144,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // creazione json object con i dati del form
         const payload = Object.fromEntries(formData.entries());
+
+        // gestione form modifica per utenti
+        if (formElement.getAttribute("data-mode") === "modifica") {
+            const inputs = formElement.querySelectorAll("input:disabled, select:disabled");
+            inputs.forEach(i => payload[i.name] = i.value);
+        }
+
+        const verificatoCheckbox = formElement.querySelector('input[name="verificato"]');
+        if (verificatoCheckbox) {
+            payload["verificato"] = verificatoCheckbox.checked;
+        }
 
         const mode = formElement.getAttribute("data-mode");
         const id = formElement.getAttribute("data-id");

@@ -48,7 +48,6 @@ class UserCRUD:
         setattr(user, "username", username)
         return user
     
-
     @db_commiter
     def reset_password(self, user: User, password: str) -> None:
         """
@@ -56,6 +55,14 @@ class UserCRUD:
         """
         user.set_password(password)
 
+    # admin panel
+    @db_commiter
+    def toggle_verification(self, user: User, verificato: bool) -> None:
+        """
+        Attiva o disattiva la verifica dell'utente.
+        """
+        setattr(user, "verificato", verificato)
+        return
 
     @db_commiter
     def delete_user(self, user: User):

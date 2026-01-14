@@ -242,7 +242,7 @@ def aggiungi_utente():
 
         send_email(
             email=data.get("email"),
-            subject="Credenziali per il login con ruolo ADMIN",
+            subject=f"Il tuo account è stato creato da un amministratore con il ruolo {data.get('ruolo')}!",
             message=f"<h2>Suggeriamo di cambiare subito le credenziali appena effettuato il primo login!</h2><p><strong>Username:</strong> {data.get('username')}<br><strong>Email:</strong> {data.get('email')}<br><strong>Password:</strong> {data.get('password')}</p>"
         )       
 
@@ -254,12 +254,31 @@ def aggiungi_utente():
 @login_required
 @admin_required
 def modifica_utente(id):
-    # Logica modifica utente
+    data = request.get_json()
+    
+    user_obj = usercrud.get_user(id)
+    usercrud.toggle_verification(user=user_obj, verificato=bool(data.get("verificato")))
+    
+    if bool(data.get("verificato")):
+        send_email(
+            email=data.get("email"),
+            subject="Richiesta autenticazione account completata",
+            message=f"<h2>La richiesta di autenticazione per il tuo account è stata completata!</h2><br><p>Ora sei verificato e puoi quindi accedere al tuo account.</p>"
+        )
+
     return jsonify({"status": "success"})
 
 @home_bp.route("/admin/management/utente/elimina/<int:id>", methods=["DELETE"])
 @login_required
 @admin_required
 def elimina_utente(id):
-    # Logica elimina utente
+    user_obj = usercrud.get_user(id)
+    
+    send_email(
+        email=user_obj.email,
+        subject="Richiesta di eliminazione account completata",
+        message=f"<h2>La richiesta di eliminazione per il tuo account è stata completata!</h2><br><p>Il tuo account è stato eliminato.</p>"
+    )
+    usercrud.delete_user(user=user_obj)
+
     return jsonify({"status": "success"})
