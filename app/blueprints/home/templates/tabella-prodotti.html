@@ -10,7 +10,7 @@
   </thead>
   <tbody class="text-gray-300">
     {% for prodotto in items %} 
-    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors" data-info="{{ prodotto.codice|lower }} {{ prodotto.nome|lower }}" data-categoria="{{ prodotto.categoria_id }}">
         <td class="p-4">{{ prodotto.codice }}</td>
         <td class="p-4">{{ prodotto.nome }}</td>
         <td class="p-4">{{ prodotto.prezzo }}€</td>

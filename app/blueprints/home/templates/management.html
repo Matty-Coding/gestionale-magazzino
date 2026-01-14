@@ -33,6 +33,25 @@ Admin | Management
 
     <!-- navigazione tra le tabelle -->
     <nav class="flex-1 p-2">
+      
+      <!-- filtro categorie -->
+      <div>
+        <h3 class="border-b border-white text-center">Categorie</h3>
+        <ul id="lista-categorie" class="space-y-2">
+          {% for categoria in categorie %}
+            <li data-categoria="{{ categoria.id }}">
+              <button class="text-left cursor-pointer w-full p-3 rounded
+               hover:bg-lime-500/70 text-gray-300 hover:text-black 
+               transition-all duration-150 ease-in">
+                <i class="bi bi-tag mr-2"></i>
+                {{ categoria.nome }}
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <h3 class="mt-5 border-b border-white text-center">Modelli tabelle</h3>
       <ul id="lista-tabelle" class="space-y-2">
         <li data-tipo="prodotti">
           <button
@@ -105,4 +124,5 @@ Admin | Management
 
 {% block javascript %}
 <script src="{{ url_for('home.static', filename='admin.js') }}"></script>
+<script defer src="{{ url_for('home.static', filename='filtro-prodotti.js') }}"></script>
 {% endblock %}

@@ -4,9 +4,10 @@ from .forms import FornitoreForm, ProdottoForm, UtenteForm
 from app.models.fornitore_crud import FornitoreCRUD
 from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
-from app.models.database import Prodotto
+from app.models.database import Prodotto, Categoria
 from app.utils.decorators import admin_required
 from app.services.mail_sender import send_email
+
 
 
 home_bp = Blueprint(
@@ -152,7 +153,8 @@ def get_resource_data(resource_type):
 @login_required
 @admin_required
 def admin_management():
-    return render_template("management.html")
+    categorie = Categoria.query.all()
+    return render_template("management.html", categorie=categorie)
 
 
 # ==========================================

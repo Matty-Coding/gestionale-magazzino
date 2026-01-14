@@ -53,6 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 // display dinamico tabella selezionata
                 tableContainer.innerHTML = data.table_html;
 
+                // custom event per segnalare che la tabella è stata caricata
+                const event = new CustomEvent("tabellaCaricata", { detail: data.table_html });
+                document.dispatchEvent(event);
+
                 // display dinamico form correlato
                 formContainer.innerHTML = data.form_html;
 
