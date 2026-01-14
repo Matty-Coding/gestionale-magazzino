@@ -1,0 +1,81 @@
+<!-- <ul class="p-4 space-y-4">
+  {% for item in cart %}
+    <li class="flex justify-between items-center border-b border-white/10 pb-2" data-id="{{ item['prodotto'].id }}" data-quantita="{{ item['quantita'] }}">
+      
+      <div class="flex flex-col">
+        <span class="text-lg font-semibold text-white ">{{ item["prodotto"].nome }}</span>
+        <span class="text-lg font-semibold text-white">x{{ item["quantita"] }}</span>
+        <span class="text-lg font-semibold text-white">{{ item["prodotto"].prezzo }}€</span>
+      </div>
+      
+      <div class="flex gap-3 text-lg">
+        <i class="incrementa bi bi-plus-lg text-green-400 cursor-pointer hover:scale-125 btn-piu"></i>
+        <i class="decrementa bi bi-dash-lg text-yellow-400 cursor-pointer hover:scale-125 btn-meno"></i>
+        <i class="elimina bi bi-x-lg text-red-400 cursor-pointer hover:scale-125 btn-rimuovi"></i>
+      </div>
+    </li>
+  {% endfor %}
+</ul> -->
+
+{% if cart %}
+  <!-- <div class="p-4 border-t border-white/20">
+    
+    <div class="flex justify-between text-white font-bold mb-4">
+      <span>Totale:</span>
+      <span>{{ "%.2f"|format(totale) }}€</span>
+    </div>
+    <a href="#" class="block text-center bg-lime-500 text-black py-2 rounded-lg font-bold hover:bg-lime-400   transition-colors">
+      Vai al pagamento  
+    </a>
+  </div> -->
+
+  <div class="flex-1 rounded-t-xl">
+    <div class="rounded-t-xl py-2">
+      <ul class="w-full flex items-center justify-around">
+        <li class="w-full text-xl text-center">Nome</li>
+        <li class="w-full text-xl text-center">Disponibili</li>
+        <li class="w-full text-xl text-center">Quantità</li>
+        <li class="w-full text-xl text-center">Prezzo</li>
+        <li class="w-full text-xl text-center">Totale</li>
+      </ul>
+    </div>
+
+    <ul class="p-4 w-full flex flex-col items-center justify-around">
+      {% for item in cart %}
+        <li class="w-full bg-fuchsia-600 border border-black text-lg flex justify-around items-center" data-id="{{ item['prodotto'].id }}" data-quantita="{{ item['quantita'] }}">
+          
+          <div class="text-lg font-semibold text-white w-full text-center">
+            <div>{{ item["prodotto"].nome }}</div>
+          </div>
+
+          <div class="text-lg font-semibold text-white w-full text-center">
+            <div>(da fixare)</div>  
+          </div>
+
+          <div class="flex justify-center items-center rounded-lg gap-3 text-lg w-full h-full">
+            <div>
+            <i class="decrementa bi bi-dash-lg h-full border-x px-2 text-white cursor-pointer hover:scale-125 btn-meno"></i>
+            <span class="p-2">{{ item["quantita"] }}</span>
+            <i class="incrementa bi bi-plus-lg h-full border-x px-2 text-white cursor-pointer hover:scale-125 btn-piu"></i>
+            </div>
+          </div>
+
+          <div class="text-lg font-semibold text-white w-full text-center">
+            <div>{{ item["prodotto"].prezzo }}€/pz</div>
+          </div>
+
+          <div class="text-lg font-semibold text-white w-full text-center">
+            <div>{{ item["prodotto"].prezzo * item["quantita"] }}€</div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="text-lg">
+    <button id="svuota" class="">Svuota <i class="bi bi-trash"></i></button>
+    <a href="#">Acquista <i class="bi bi-credit-card-2-back"></i></a>
+  </div>
+  {% else %}
+    <p class="w-full p-5 text-center text-white">Il carrello è vuoto</p>
+  {% endif %}

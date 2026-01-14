@@ -7,15 +7,35 @@
 {% block header %}
   <div class="flex h-full justify-between px-5">
     {% include '/components/logo.html' %}
+    <h1 class="text-5xl py-2 text-center font-bold">Dashboard {{ current_user.ruolo.capitalize() }}</h1>
+    
+    <div class="group relative text-2xl">
+      
+      <div class="relative flex items-center gap-2 cursor-pointer group-hover:scale-125
+       group-hover:text-green-500 transition-all duration-100 ease-linear">
+        <span data-conta="{{ numero_prodotti }}" id="conta-elementi" class="absolute top-0 right-0 w-6 h-6 text-sm font-mono
+         bg-yellow-300 text-black flex justify-center items-center rounded-full border-2 border-black">
+         {{ numero_prodotti }}
+        </span>
+        <i class="bi bi-cart3 text-4xl"></i>
+      </div>
+      <div id="carrello" 
+        class="flex group-hover:flex flex-col absolute w-200 h-150 
+        top-full -right-30 z-50 border rounded-xl bg-black">
+        {% include 'blocco-carrello.html' %}
+      </div>
+    
+    </div>
+      
     {% include '/components/dashboard-nav.html' %}
+    
   </div>
 {% endblock %}
 
 {% block main %}
-  <h1 class="text-5xl py-2 text-center font-bold">Dashboard {{ current_user.ruolo.capitalize() }}</h1>
-  <div class="grid grid-cols-4 gap-2 p-7">
+  <div id="griglia-prodotti" class="h-[90%] overflow-y-scroll grid grid-cols-4 gap-2 p-7">
     {% for prodotto in prodotti %}
-      <article 
+      <article data-id="{{ prodotto.id }}" data-quantita="{{ prodotto.quantita}}" data-nome="{{ prodotto.nome }}"
         class="bg-black/60 rounded-lg border border-white 
         flex flex-col gap-2 
         cursor-pointer 
@@ -24,6 +44,7 @@
         <p class="px-4"><span class="font-semibold">Codice:  </span>{{ prodotto.codice }}</p>
         <p class="px-4"><span class="font-semibold">Quantità:  </span>{{ prodotto.quantita }}</p>
         <p class="px-4 pb-4"><span class="font-semibold">Prezzo:  </span>{{ prodotto.prezzo }}€</p>
+        <button class="aggiungi rounded-b-lg py-2 px-4 bg-indigo-500 cursor-pointer hover:bg-indigo-700">Aggiungi</button>
       </article>
     {% endfor %}
   </div>
@@ -31,4 +52,5 @@
 
 {% block javascript %}
   <script src="{{ url_for('auth.static', filename='change-username.js') }}"></script>
+  <script src="{{ url_for('home.static', filename='carrello.js') }}"></script>
 {% endblock %}

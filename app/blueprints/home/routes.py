@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 from flask_login import current_user, login_required
 from .forms import FornitoreForm, ProdottoForm, UtenteForm
 from app.models.fornitore_crud import FornitoreCRUD
@@ -7,8 +7,7 @@ from app.models.user_crud import UserCRUD
 from app.models.database import Prodotto, Categoria
 from app.utils.decorators import admin_required
 from app.services.mail_sender import send_email
-
-
+from .cart import Cart
 
 home_bp = Blueprint(
     name="home",
@@ -26,6 +25,7 @@ prodottocrud = ProdottoCrud()
 @home_bp.route("/")
 def index():
     return render_template("index.html")
+
 
 @home_bp.route("/dashboard")
 @login_required
@@ -49,7 +49,18 @@ def dashboard():
         
         case "CLIENTE":
             prodotti = prodottocrud.get_all_prodotti()
-            return render_template("cliente_dashboard.html", prodotti=prodotti)
+            
+            cart = Cart()
+            cart_data = session.get("cart", {})
+            
+            cart_items = []
+            for prodotto_id, quantita in cart_data.items():
+                prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
+                cart_items.append({"prodotto": prodotto, "quantita": quantita})
+
+            totale = cart.totale(item["prodotto"] for item in cart_items)
+
+            return render_template("cliente_dashboard.html", prodotti=prodotti, cart=cart_items, totale=totale, numero_prodotti=len(cart))
         
         case "ADMIN":
             totale_utenti_per_ruolo = usercrud.get_users_by_role()
@@ -284,3 +295,78 @@ def elimina_utente(id):
     usercrud.delete_user(user=user_obj)
 
     return jsonify({"status": "success"})
+
+
+# ==========================================
+# =============  CARRELLO  =================
+# ==========================================
+def get_cart_render_data():
+    """
+    Restituisce rendering del carrello e la quantita di prodotti presenti
+    """
+    cart = Cart()
+    cart_data = session.get("cart", {})
+    cart_items = []
+    for prodotto_id, quantita in cart_data.items():
+        prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
+        if prodotto: 
+            cart_items.append({"prodotto": prodotto, "quantita": quantita})
+
+    lista_prodotti = [item["prodotto"] for item in cart_items]
+    totale = cart.totale(lista_prodotti)
+    html = render_template("blocco-carrello.html", cart=cart_items, totale=totale)
+    return html, len(cart)
+
+
+@home_bp.route("/carrello/aggiungi/<int:prodotto_id>", methods=["POST"])
+@login_required
+def aggiungi_al_carrello(prodotto_id):
+    Cart().aggiungi(prodotto_id=prodotto_id)
+    html, conta_prodotti = get_cart_render_data()
+
+    return jsonify({
+        "status": "success",
+        "html": html,
+        "conta_prodotti": conta_prodotti
+    })
+
+
+@home_bp.route("/carrello/elimina/<int:prodotto_id>", methods=["POST"])
+@login_required
+def rimuovi_dal_carrello(prodotto_id):
+    Cart().rimuovi(prodotto_id=prodotto_id)
+    html, conta_prodotti = get_cart_render_data()
+
+    return jsonify({
+        "status": "success",
+        "html": html,
+        "conta_prodotti": conta_prodotti
+    })
+
+
+@home_bp.route("/carrello/modifica/<int:prodotto_id>", methods=["POST"])
+@login_required
+def modifica_quantita(prodotto_id):
+    data = request.get_json()
+    print("dati ricevuti", data)
+    Cart().modifica_quantita(prodotto_id=prodotto_id, quantita=int(data.get("quantita")))
+    html, conta_prodotti = get_cart_render_data()
+
+    return jsonify({
+        "status": "success",
+        "html": html,
+        "conta_prodotti": conta_prodotti
+    })
+
+
+@home_bp.route("/carrello/svuota", methods=["POST"])
+@login_required
+def svuota_carrello():
+    Cart().svuota()
+    html, conta_prodotti = get_cart_render_data()
+
+    return jsonify({
+        "status": "success",
+        "html": html,
+        "conta_prodotti": conta_prodotti
+    })  
