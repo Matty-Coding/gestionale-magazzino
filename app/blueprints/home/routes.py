@@ -4,7 +4,8 @@ from .forms import FornitoreForm, ProdottoForm, UtenteForm
 from app.models.fornitore_crud import FornitoreCRUD
 from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
-from app.models.database import Prodotto, Categoria
+from app.models.ordine_crud import OrdineCrud
+from app.models.database import Prodotto, Categoria, Ordine, OrdineDettaglio
 from app.utils.decorators import admin_required
 from app.services.mail_sender import send_email
 from .cart import Cart
@@ -348,7 +349,6 @@ def rimuovi_dal_carrello(prodotto_id):
 @login_required
 def modifica_quantita(prodotto_id):
     data = request.get_json()
-    print("dati ricevuti", data)
     Cart().modifica_quantita(prodotto_id=prodotto_id, quantita=int(data.get("quantita")))
     html, conta_prodotti = get_cart_render_data()
 
@@ -370,3 +370,48 @@ def svuota_carrello():
         "html": html,
         "conta_prodotti": conta_prodotti
     })  
+
+
+@home_bp.route("/checkout", methods=["GET", "POST"])
+@login_required
+def checkout():
+    cart = Cart()
+    ordinecrud = OrdineCrud()
+
+    cart_data = session.get("cart", {})
+
+    nuovo_ordine = ordinecrud.create_ordine(cliente_id=current_user.id)
+    
+    cart_items = []
+    for prodotto_id, quantita in cart_data.items():
+        prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
+        if prodotto: 
+            cart_items.append(prodotto)
+    
+            dettaglio_ordine = ordinecrud.create_dettagli_ordine(
+                ordine_id=nuovo_ordine.id,
+                prodotto_id=prodotto.id,
+                quantita=quantita,
+                prezzo_unitario=prodotto.prezzo
+            )
+
+    ordinecrud.update_ordine(ordine=nuovo_ordine, totale=cart.totale(cart_items))
+
+    cart.svuota()
+
+    html, conta_prodotti = get_cart_render_data()
+
+    return jsonify({
+        "status": "success", 
+        "message": f"Ordine {nuovo_ordine.id} creato con successo",
+        "html": html,
+        "conta_prodotti": conta_prodotti
+        })
+    
+@home_bp.route("/miei-ordini")
+@login_required
+def miei_ordini():
+    ordinecrud = OrdineCrud()
+    ordini = ordinecrud.get_ordini_by_cliente_id(cliente_id=current_user.id)
+
+    return render_template("miei-ordini.html", ordini=ordini)

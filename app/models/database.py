@@ -19,7 +19,7 @@ class Categoria(db.Model):
     attiva: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # relazione con la tabella prodotti
-    prodotti = relationship("Prodotto", back_populates="categoria")
+    prodotti: Mapped[list["Prodotto"]] = relationship("Prodotto", back_populates="categoria")
 
     def __str__(self):
         return self.nome
@@ -46,6 +46,8 @@ class Prodotto(db.Model):
     # relazione con la tabella fornitori
     fornitori: Mapped[list["FornitoreProdotto"]] = relationship("FornitoreProdotto", back_populates="prodotto", cascade="all, delete-orphan")
 
+    # relazione con la tabella ordini
+    dettagli_ordine: Mapped[list["OrdineDettaglio"]] = relationship("OrdineDettaglio", back_populates="prodotto")
 
     def __str__(self):
         return self.nome
@@ -67,8 +69,9 @@ class Fornitore(db.Model):
     # relazione con la tabella prodotti
     prodotti: Mapped[list["FornitoreProdotto"]] = relationship("FornitoreProdotto", back_populates="fornitore", cascade="all, delete-orphan")
 
-    # relazione con la tabella users
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False)
+
+    # relazione con la tabella users
     user: Mapped["User"] = relationship("User", back_populates="fornitore", uselist=False)
 
     def __str__(self):
@@ -111,6 +114,10 @@ class User(db.Model, UserMixin):
     ruolo: Mapped[str] = mapped_column(String(20), nullable=False)
     verificato: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # relazione con la tabella ordini
+    ordini: Mapped[list["Ordine"]] = relationship("Ordine", back_populates="cliente", cascade="all, delete-orphan")
+
+    # relazione con la tabella fornitori
     fornitore: Mapped[Fornitore] = relationship("Fornitore", back_populates="user", uselist=False, cascade="all, delete-orphan")
     
     def set_password(self, password):
@@ -132,7 +139,6 @@ class User(db.Model, UserMixin):
         setattr(self, "verificato", True)
         db.session.commit()
         return
-
 
     def __str__(self):
         return f"{self.username} - {self.email} - {self.ruolo} - {'Verificato' if self.verificato else 'NonVerificato'}"
@@ -159,3 +165,51 @@ class IpBloccato(db.Model):
             self.blocked_until = self.blocked_until.replace(tzinfo=timezone.utc)
         
         return self.blocked_until > datetime.now(timezone.utc)
+    
+
+# =============================================================================
+# ======================   Modello Ordini Cliente   ===========================
+# =============================================================================
+class Ordine(db.Model):
+
+    __tablename__ = "ordini"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    cliente_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    data_ordine: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    stato: Mapped[str] = mapped_column(String(20), default="PENDING")
+    totale: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
+    note: Mapped[str] = mapped_column(Text, default="")
+
+    # relazione con la tabella users
+    cliente: Mapped["User"] = relationship("User", back_populates="ordini")
+    
+    # relazione con la tabella ordine_dettagli
+    dettagli: Mapped[list["OrdineDettaglio"]] = relationship("OrdineDettaglio", back_populates="ordine", cascade="all, delete-orphan")
+
+    def __str__(self):
+        return f"{self.data_ordine} - {self.stato} - {self.totale}"
+    
+
+# =============================================================================
+# =====================   Modello OrdineDettaglio  ============================
+# =============================================================================    
+class OrdineDettaglio(db.Model):
+
+    __tablename__ = "ordine_dettagli"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ordine_id: Mapped[int] = mapped_column(ForeignKey("ordini.id"), nullable=False)
+    prodotto_id: Mapped[int] = mapped_column(ForeignKey("prodotti.id"), nullable=False)
+    quantita: Mapped[int] = mapped_column(Integer)
+    prezzo_unitario: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+
+    # relazione con l'ordine
+    ordine: Mapped["Ordine"] = relationship("Ordine", back_populates="dettagli")
+    
+    # relazione con il prodotto
+    prodotto: Mapped["Prodotto"] = relationship("Prodotto", back_populates="dettagli_ordine")
+
+    @property
+    def prezzo_totale(self):
+        return self.quantita * self.prezzo_unitario

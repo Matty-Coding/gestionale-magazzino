@@ -3,8 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const carrello = document.querySelector("#carrello");
     const contaElementi = document.querySelector("#conta-elementi");
 
-    aggiornaBadge(0);
-
     // funzione per aggiornare badge
     function aggiornaBadge(conteggio) {
         contaElementi.textContent = conteggio;
@@ -70,12 +68,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result.status === "success") {
                 carrello.innerHTML = result.html;
-                aggiornaBadge(0);
+                aggiornaBadge(result.conta_prodotti);
                 recupera.forEach(item => {
                     sincronizzaDisponibilita(item.id, item.quantita);
                 });
             }
             return;
+        }
+
+        if (e.target.closest("#checkout")) {
+            e.preventDefault();
+            const checkoutBtn = document.querySelector("#checkout");
+            const originalHTML = checkoutBtn.innerHTML;
+
+            // disabilitazione del pulsante per evitare spam
+            checkoutBtn.disabled = true;
+            // feedback visivo per elaborazione
+            checkoutBtn.innerHTML = "<i class='bi bi-hourglass-split animate-spin'></i> Elaborazione...";
+
+            // fetch singolo 
+            const response = await fetch("/checkout", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                }
+            });
+
+            console.log("fetch partito")
+            if (!response.ok) {
+                checkoutBtn.disabled = false;
+                checkoutBtn.innerHTML = originalHTML;
+                throw new Error("HTTP error!");
+            }
+            const result = await response.json();
+            console.log("fetch completato")
+            console.log("risposta", result)
+            if (result.status === "success") {
+                carrello.innerHTML = result.html;
+                aggiornaBadge(result.conta_prodotti);
+                alert(result.message);
+                window.location.href = "/miei-ordini";
+
+            } else {
+                alert(result.message);
+                checkoutBtn.disabled = false;
+                checkoutBtn.innerHTML = originalHTML;
+            }
         }
 
         const li = e.target.closest("li");
@@ -98,19 +137,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             endpoint = `/carrello/modifica/${id}`;
             nuovaQuantitaCarrello = quantitaCarrello + 1;
-            variazioneMagazzino - 1;
+            variazioneMagazzino = -1;
             sincronizzaDisponibilita(id, -1);
 
         } else if (e.target.matches(".decrementa")) {
             endpoint = `/carrello/modifica/${id}`;
             nuovaQuantitaCarrello = quantitaCarrello - 1;
-            variazioneMagazzino + 1;
-            sincronizzaDisponibilita(id, 1);
+            variazioneMagazzino = 1;
 
         } else if (e.target.matches(".elimina")) {
             endpoint = `/carrello/elimina/${id}`;
             variazioneMagazzino = quantitaCarrello;
-            sincronizzaDisponibilita(id, scorta);
         }
 
         if (endpoint) {
