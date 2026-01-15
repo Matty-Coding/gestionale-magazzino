@@ -20,7 +20,7 @@
         <i class="bi bi-cart3 text-4xl"></i>
       </div>
       <div id="carrello" 
-        class="flex group-hover:flex flex-col absolute w-200 h-150 
+        class="hidden group-hover:flex flex-col absolute w-200 h-150 
         top-full -right-30 z-50 border rounded-xl bg-black">
         {% include 'blocco-carrello.html' %}
       </div>
@@ -35,15 +35,15 @@
 {% block main %}
   <div id="griglia-prodotti" class="h-[90%] overflow-y-scroll grid grid-cols-4 gap-2 p-7">
     {% for prodotto in prodotti %}
-      <article data-id="{{ prodotto.id }}" data-quantita="{{ prodotto.quantita}}" data-nome="{{ prodotto.nome }}"
+      <article data-id="{{ prodotto.id }}" data-quantita="{{ prodotto.quantita}}"
         class="bg-black/60 rounded-lg border border-white 
         flex flex-col gap-2 
         cursor-pointer 
         hover:bg-lime-500/30 hover:scale-95 transition-all duration-200 ease-in">
         <h2 class="text-center text-2xl font-bold">{{ prodotto.nome }}</h2>
-        <p class="px-4"><span class="font-semibold">Codice:  </span>{{ prodotto.codice }}</p>
-        <p class="px-4"><span class="font-semibold">Quantità:  </span>{{ prodotto.quantita }}</p>
-        <p class="px-4 pb-4"><span class="font-semibold">Prezzo:  </span>{{ prodotto.prezzo }}€</p>
+        <p class="px-4"><span class="font-semibold">Codice: </span>{{ prodotto.codice }}</p>
+        <p class="conteggio px-4"><span class="font-semibold">Quantità: </span>{{ prodotto.quantita }}</p>
+        <p class="px-4 pb-4"><span class="font-semibold">Prezzo: </span>{{ prodotto.prezzo }}€</p>
         <button class="aggiungi rounded-b-lg py-2 px-4 bg-indigo-500 cursor-pointer hover:bg-indigo-700">Aggiungi</button>
       </article>
     {% endfor %}

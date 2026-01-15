@@ -1,81 +1,83 @@
-<!-- <ul class="p-4 space-y-4">
-  {% for item in cart %}
-    <li class="flex justify-between items-center border-b border-white/10 pb-2" data-id="{{ item['prodotto'].id }}" data-quantita="{{ item['quantita'] }}">
-      
-      <div class="flex flex-col">
-        <span class="text-lg font-semibold text-white ">{{ item["prodotto"].nome }}</span>
-        <span class="text-lg font-semibold text-white">x{{ item["quantita"] }}</span>
-        <span class="text-lg font-semibold text-white">{{ item["prodotto"].prezzo }}€</span>
-      </div>
-      
-      <div class="flex gap-3 text-lg">
-        <i class="incrementa bi bi-plus-lg text-green-400 cursor-pointer hover:scale-125 btn-piu"></i>
-        <i class="decrementa bi bi-dash-lg text-yellow-400 cursor-pointer hover:scale-125 btn-meno"></i>
-        <i class="elimina bi bi-x-lg text-red-400 cursor-pointer hover:scale-125 btn-rimuovi"></i>
-      </div>
-    </li>
-  {% endfor %}
-</ul> -->
-
 {% if cart %}
-  <!-- <div class="p-4 border-t border-white/20">
+  <div class="flex flex-col h-full text-white bg-neutral-900 rounded-xl overflow-hidden shadow-2xl border border-white/10">
     
-    <div class="flex justify-between text-white font-bold mb-4">
-      <span>Totale:</span>
-      <span>{{ "%.2f"|format(totale) }}€</span>
-    </div>
-    <a href="#" class="block text-center bg-lime-500 text-black py-2 rounded-lg font-bold hover:bg-lime-400   transition-colors">
-      Vai al pagamento  
-    </a>
-  </div> -->
-
-  <div class="flex-1 rounded-t-xl">
-    <div class="rounded-t-xl py-2">
-      <ul class="w-full flex items-center justify-around">
-        <li class="w-full text-xl text-center">Nome</li>
-        <li class="w-full text-xl text-center">Disponibili</li>
-        <li class="w-full text-xl text-center">Quantità</li>
-        <li class="w-full text-xl text-center">Prezzo</li>
-        <li class="w-full text-xl text-center">Totale</li>
+    <div class="bg-neutral-800/50 border-b border-white/10">
+      <ul class="flex items-center justify-around py-3 px-4 text-xs font-bold uppercase tracking-wider text-neutral-400">
+        <li class="w-1/4 text-left">Prodotto</li>
+        <li class="w-1/6 text-center">Disponibili</li>
+        <li class="w-1/4 text-center">Quantità</li>
+        <li class="w-1/6 text-center">Prezzo</li>
+        <li class="w-1/6 text-right">Subtotale</li>
       </ul>
     </div>
 
-    <ul class="p-4 w-full flex flex-col items-center justify-around">
-      {% for item in cart %}
-        <li class="w-full bg-fuchsia-600 border border-black text-lg flex justify-around items-center" data-id="{{ item['prodotto'].id }}" data-quantita="{{ item['quantita'] }}">
-          
-          <div class="text-lg font-semibold text-white w-full text-center">
-            <div>{{ item["prodotto"].nome }}</div>
-          </div>
-
-          <div class="text-lg font-semibold text-white w-full text-center">
-            <div>(da fixare)</div>  
-          </div>
-
-          <div class="flex justify-center items-center rounded-lg gap-3 text-lg w-full h-full">
-            <div>
-            <i class="decrementa bi bi-dash-lg h-full border-x px-2 text-white cursor-pointer hover:scale-125 btn-meno"></i>
-            <span class="p-2">{{ item["quantita"] }}</span>
-            <i class="incrementa bi bi-plus-lg h-full border-x px-2 text-white cursor-pointer hover:scale-125 btn-piu"></i>
+    <div class="flex-1 overflow-y-auto max-h-100">
+      <ul class="divide-y divide-white/5">
+        {% for item in cart %}
+          <li class="flex items-center justify-around py-4 px-4 hover:bg-white/5 transition-colors group" 
+              data-id="{{ item['prodotto'].id }}" 
+              data-quantita="{{ item['quantita'] }}">
+            
+            <div class="w-1/4 text-left font-medium text-lime-400 truncate">
+              {{ item["prodotto"].nome }}
             </div>
-          </div>
 
-          <div class="text-lg font-semibold text-white w-full text-center">
-            <div>{{ item["prodotto"].prezzo }}€/pz</div>
-          </div>
+            <div class="w-1/6 text-center text-sm text-neutral-400">
+              <span class="bg-neutral-800 px-2 py-1 rounded border border-white/5">
+                {{ item["prodotto"].quantita - item["quantita"] }}
+              </span>
+            </div>
 
-          <div class="text-lg font-semibold text-white w-full text-center">
-            <div>{{ item["prodotto"].prezzo * item["quantita"] }}€</div>
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
+            <div class="w-1/4 flex justify-center">
+              <div class="flex items-center bg-neutral-800 rounded-lg border border-white/10 overflow-hidden">
+                <button class="decrementa cursor-pointer p-2 hover:bg-neutral-700 text-white transition-colors">
+                  <i class="bi bi-dash-lg decrementa"></i>
+                </button>
+                <span class="w-10 text-center font-mono font-bold text-lg border-x border-white/10">
+                  {{ item["quantita"] }}
+                </span>
+                <button class="incrementa cursor-pointer p-2 hover:bg-neutral-700 text-white transition-colors">
+                  <i class="bi bi-plus-lg incrementa"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="w-1/6 text-center text-sm text-neutral-400 italic">
+              {{ item["prodotto"].prezzo }}€
+            </div>
+
+            <div class="w-1/6 text-right font-bold text-white text-lg">
+              {{ "%.2f"|format(item["prodotto"].prezzo * item["quantita"]) }}€
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="p-6 bg-neutral-800/80 border-t border-white/10">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-neutral-400 uppercase tracking-widest font-bold">Totale Complessivo</span>
+        <span class="text-3xl font-black text-lime-500">
+          {{ "%.2f"|format(totale) }}€
+        </span>
+      </div>
+
+      <div class="flex gap-4">
+        <button id="svuota" class="cursor-pointer  flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-neutral-700 hover:bg-red-600/20 hover:text-red-500 border border-white/10 rounded-xl transition-all duration-300 font-bold uppercase text-xs tracking-widest">
+          <i class="bi bi-trash"></i> Svuota
+        </button>
+        
+        <a href="#" class="cursor-pointer flex-2 flex items-center justify-center gap-2 py-3 px-4 bg-lime-500 hover:bg-lime-400 text-black rounded-xl transition-all duration-300 font-black uppercase text-xs tracking-widest shadow-[0_0_20px_rgba(132,204,22,0.3)]">
+          Acquista <i class="bi bi-credit-card-2-back"></i>
+        </a>
+      </div>
+    </div>
   </div>
 
-  <div class="text-lg">
-    <button id="svuota" class="">Svuota <i class="bi bi-trash"></i></button>
-    <a href="#">Acquista <i class="bi bi-credit-card-2-back"></i></a>
+{% else %}
+  <div class="flex flex-col items-center justify-center p-12 text-neutral-500 bg-neutral-900 rounded-xl border border-dashed border-white/10">
+    <i class="bi bi-cart-x text-6xl mb-4 opacity-40"></i>
+    <p class="text-xl font-medium tracking-tight">Il tuo carrello è vuoto</p>
+    <p class="text-sm mt-2 opacity-60 text-center">Aggiungi dei prodotti dalla dashboard per iniziare.</p>
   </div>
-  {% else %}
-    <p class="w-full p-5 text-center text-white">Il carrello è vuoto</p>
-  {% endif %}
+{% endif %}
