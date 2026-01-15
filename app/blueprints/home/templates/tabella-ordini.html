@@ -1,0 +1,32 @@
+<table class="w-full text-left border-collapse">
+  <thead class="sticky top-0 bg-zinc-800 text-gray-400 text-sm uppercase">
+    <tr>
+      <th class="p-4 border-b border-white/10">Email</th>
+      <th class="p-4 border-b border-white/10">Stato</th>
+      <th class="p-4 border-b border-white/10">Totale</th>
+      <th class="p-4 border-b border-white/10 text-center">Azioni</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-300">
+    {% for ordine in items %} 
+    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors" data-info="{{ ordine.stato|lower }}">
+        <td class="p-4">{{ ordine.cliente.email }}</td>
+        <td class="p-4">{{ ordine.stato }}</td>
+        <td class="p-4">{{ ordine.totale }}€</td>
+        <td class="p-4 text-center space-x-3">
+            
+            <button class="btn-edit text-blue-400 hover:scale-110 transition-transform cursor-pointer"
+                    data-id="{{ ordine.id }}"
+                    data-row='{"stato": "{{ ordine.stato }}"}'>
+                <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn-delete text-red-400 hover:scale-110 transition-transform cursor-pointer" 
+                    data-id="{{ ordine.id }}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

@@ -26,11 +26,41 @@ class OrdineCrud:
         return self.session.query(Ordine).filter_by(cliente_id=cliente_id).order_by(Ordine.id.desc()).all()
 
 
+    def get_all_ordini(self) -> list[Ordine]:
+        """
+        Restituisce tutti gli ordini nel db.
+        """
+        return self.session.query(Ordine).order_by(Ordine.id.desc()).all()
+
+    def get_ordine_by_id(self, ordine_id:int) -> Ordine:
+        """
+        Restituisce l'ordine con l'id specificato.
+        """
+        return self.session.query(Ordine).filter_by(id=ordine_id).first()
+
+    @db_commiter
+    def update_stato(self, ordine_id:int, stato:str) -> Ordine:
+        """
+        Aggiorna lo stato di un ordine nel db.
+        """
+
+        ordine = self.session.query(Ordine).filter_by(id=ordine_id).first()
+        ordine.stato = stato
+        return ordine
+    
     @db_commiter
     def update_ordine(self, ordine:Ordine, **kwargs) -> Ordine:
         for key, value in kwargs.items():
             setattr(ordine, key, value)
         return ordine
+
+    @db_commiter
+    def elimina_ordine(self, ordine_id:int) -> None:
+        """
+        Elimina un ordine dal db.
+        """
+        ordine = self.get_ordine_by_id(ordine_id)
+        self.session.delete(ordine)
 
     @db_commiter
     def create_dettagli_ordine(self, ordine_id:int, prodotto_id:int, quantita:int, prezzo_unitario:Decimal) -> OrdineDettaglio:

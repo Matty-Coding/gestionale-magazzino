@@ -134,3 +134,15 @@ class UtenteForm(FlaskForm):
     )
 
     verificato = BooleanField("Verificato", default=False)
+
+
+class OrdineForm(FlaskForm):
+    stato = SelectField(
+        "Stato", 
+        choices=[
+            ("PENDING", "In attesa"),
+            ("SHIPPED", "Spedito"), 
+            ("DELIVERED", "Consegnato"),
+            ("CANCELLED", "Annullato"),
+            ("CONFIRMED", "Confermato")
+            ])

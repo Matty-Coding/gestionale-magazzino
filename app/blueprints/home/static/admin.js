@@ -44,6 +44,28 @@ document.addEventListener("DOMContentLoaded", () => {
         currentResourceType = tipo;
         nomeTabella.textContent = tipo.toUpperCase();
 
+        // rimuove button aggiungi se la tabella è quella degli ordini
+        const btnAggiungi = document.getElementById("apri-modal");
+        if (tipo === "ordini") {
+            btnAggiungi.classList.add("hidden");
+        } else {
+            btnAggiungi.classList.remove("hidden");
+        }
+
+        const filtroOrdini = document.querySelector(".filtro-ordini");
+        const filtriProdotti = document.querySelectorAll(".filtro-prodotti");
+
+        if (tipo !== "ordini" && tipo !== "prodotti") {
+            filtroOrdini.classList.add("hidden");
+            filtriProdotti.forEach(filtro => filtro.classList.add("hidden"));
+        } else if (tipo === "ordini") {
+            filtriProdotti.forEach(filtro => filtro.classList.add("hidden"));
+            filtroOrdini.classList.remove("hidden");
+        } else if (tipo === "prodotti") {
+            filtroOrdini.classList.add("hidden");
+            filtriProdotti.forEach(filtro => filtro.classList.remove("hidden"));
+        }
+
         try {
             // fetch dinamico all'endpoint corrispondente
             const response = await fetch(`/admin/api/load/${tipo}`);
@@ -88,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (btnEdit) {
             const id = btnEdit.dataset.id;
             const rowData = JSON.parse(btnEdit.dataset.row);
+            console.log("rowData", rowData);
 
             modalTitle.textContent = `Modifica ${currentEndpoint}`;
             formElement.setAttribute("data-mode", "modifica");

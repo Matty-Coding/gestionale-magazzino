@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify, session
 from flask_login import current_user, login_required
-from .forms import FornitoreForm, ProdottoForm, UtenteForm
+from .forms import FornitoreForm, ProdottoForm, UtenteForm, OrdineForm
 from app.models.fornitore_crud import FornitoreCRUD
 from app.models.prodotti_crud import ProdottoCrud
 from app.models.user_crud import UserCRUD
 from app.models.ordine_crud import OrdineCrud
-from app.models.database import Prodotto, Categoria, Ordine, OrdineDettaglio
+from app.models.database import Prodotto, Categoria
 from app.utils.decorators import admin_required
 from app.services.mail_sender import send_email
 from .cart import Cart
@@ -22,6 +22,7 @@ home_bp = Blueprint(
 usercrud = UserCRUD()
 fornitorecrud = FornitoreCRUD()
 prodottocrud = ProdottoCrud()
+ordinecrud = OrdineCrud()
 
 @home_bp.route("/")
 def index():
@@ -135,6 +136,12 @@ MANAGEMENT_CONFIG = {
         "form_class": UtenteForm,
         "template_table": "tabella-utenti.html",
         "api_endpoint": "utente"    
+    },
+    "ordini": {
+        "crud_get": ordinecrud.get_all_ordini,
+        "form_class": OrdineForm,
+        "template_table": "tabella-ordini.html",
+        "api_endpoint": "ordine"
     }
 }
 
@@ -166,7 +173,8 @@ def get_resource_data(resource_type):
 @admin_required
 def admin_management():
     categorie = Categoria.query.all()
-    return render_template("management.html", categorie=categorie)
+    ordini = ("PENDING", "SHIPPED", "DELIVERED", "CANCELLED", "CONFIRMED")
+    return render_template("management.html", categorie=categorie, ordini=ordini)
 
 
 # ==========================================
@@ -322,7 +330,8 @@ def get_cart_render_data():
 @home_bp.route("/carrello/aggiungi/<int:prodotto_id>", methods=["POST"])
 @login_required
 def aggiungi_al_carrello(prodotto_id):
-    Cart().aggiungi(prodotto_id=prodotto_id)
+    cart = Cart()
+    cart.aggiungi(prodotto_id=prodotto_id)
     html, conta_prodotti = get_cart_render_data()
 
     return jsonify({
@@ -335,7 +344,8 @@ def aggiungi_al_carrello(prodotto_id):
 @home_bp.route("/carrello/elimina/<int:prodotto_id>", methods=["POST"])
 @login_required
 def rimuovi_dal_carrello(prodotto_id):
-    Cart().rimuovi(prodotto_id=prodotto_id)
+    cart = Cart()
+    cart.rimuovi(prodotto_id=prodotto_id)
     html, conta_prodotti = get_cart_render_data()
 
     return jsonify({
@@ -348,8 +358,9 @@ def rimuovi_dal_carrello(prodotto_id):
 @home_bp.route("/carrello/modifica/<int:prodotto_id>", methods=["POST"])
 @login_required
 def modifica_quantita(prodotto_id):
+    cart = Cart()
     data = request.get_json()
-    Cart().modifica_quantita(prodotto_id=prodotto_id, quantita=int(data.get("quantita")))
+    cart.modifica_quantita(prodotto_id=prodotto_id, quantita=int(data.get("quantita")))
     html, conta_prodotti = get_cart_render_data()
 
     return jsonify({
@@ -362,7 +373,8 @@ def modifica_quantita(prodotto_id):
 @home_bp.route("/carrello/svuota", methods=["POST"])
 @login_required
 def svuota_carrello():
-    Cart().svuota()
+    cart = Cart()
+    cart.svuota()
     html, conta_prodotti = get_cart_render_data()
 
     return jsonify({
@@ -376,8 +388,6 @@ def svuota_carrello():
 @login_required
 def checkout():
     cart = Cart()
-    ordinecrud = OrdineCrud()
-
     cart_data = session.get("cart", {})
 
     nuovo_ordine = ordinecrud.create_ordine(cliente_id=current_user.id)
@@ -397,6 +407,12 @@ def checkout():
 
     ordinecrud.update_ordine(ordine=nuovo_ordine, totale=cart.totale(cart_items))
 
+    send_email(
+        email = current_user.email,
+        subject ="Il tuo ordine è stato registrato correttamente",
+        message = f"<h2>Il tuo ordine {nuovo_ordine.id} è stato registrato correttamente.</h2><br><p>Riceverai ulteriori email di aggiornamento sullo stato del tuo ordine.</p><br><p>Il tuo ordine:<br>ID: {nuovo_ordine.id}<br>Stato: {nuovo_ordine.stato}<br>Prodotto: {dettaglio_ordine.prodotto.nome}<br>Quantità: {dettaglio_ordine.quantita}<br>Prezzo: {dettaglio_ordine.prezzo_unitario}<br>Totale: {nuovo_ordine.totale}</p>"
+    )
+
     cart.svuota()
 
     html, conta_prodotti = get_cart_render_data()
@@ -411,7 +427,75 @@ def checkout():
 @home_bp.route("/miei-ordini")
 @login_required
 def miei_ordini():
-    ordinecrud = OrdineCrud()
     ordini = ordinecrud.get_ordini_by_cliente_id(cliente_id=current_user.id)
-
     return render_template("miei-ordini.html", ordini=ordini)
+
+
+# ===============================================
+# ===========  ADMIN PANEL ORDINI  ==============
+# ===============================================
+def genera_riepilogo_ordine(ordine):
+    """
+    Genera un riepilogo dell'ordine in HTML.
+    """
+    html = f"<h3>Riepilogo Ordine #{ordine.id}</h3><ul>"
+    for item in ordine.dettagli:
+        html += f"""
+            <li>
+                <strong>{item.prodotto.nome}</strong><br>
+                Quantità: {item.quantita} - Prezzo: {item.prezzo_unitario}€
+            </li>
+        """
+    html += f"</ul><p><strong>Totale Ordine: {ordine.totale}€</strong></p>"
+    return html
+
+
+@home_bp.route("/admin/management/ordine/modifica/<int:id>", methods=["POST"])
+@login_required
+@admin_required
+def modifica_ordine(id):
+    data = request.get_json()
+    ordine = ordinecrud.get_ordine_by_id(ordine_id=id)
+
+    nuovo_stato = data.get("stato")
+    nuovo_ordine = ordinecrud.update_stato(ordine_id=id, stato=nuovo_stato)
+
+    riepilogo = genera_riepilogo_ordine(ordine=nuovo_ordine)
+
+    send_email(
+        email = ordine.cliente.email,
+        subject = f"Aggiornamento Ordine #{ordine.id}: {ordine.stato}",
+        message = f"""
+            <h2>Il tuo ordine è stato aggiornato!</h2>
+            <p>Il nuovo stato è: <strong>{ordine.stato}</strong></p>
+            <hr>
+            {riepilogo}
+            <p>Grazie per aver scelto il nostro servizio.</p>
+        """
+        )
+    return jsonify({"status": "success"})
+
+
+@home_bp.route("/admin/management/ordine/elimina/<int:id>", methods=["DELETE"])
+@login_required
+@admin_required
+def elimina_ordine(id):
+    ordine = ordinecrud.get_ordine_by_id(ordine_id=id)
+
+    riepilogo = genera_riepilogo_ordine(ordine=ordine)
+
+    send_email(
+        email = ordine.cliente.email,
+        subject = f"Aggiornamento Ordine #{ordine.id}: Annullato",
+        message = f"""
+            <h2>Il tuo ordine è stato aggiornato!</h2>
+            <p>Il nuovo stato è: <strong>ANNULLATO</strong></p>
+            <hr>
+            {riepilogo}
+            <p>Grazie per aver scelto il nostro servizio.</p>
+        """
+        )
+    
+    ordinecrud.elimina_ordine(ordine_id=id)
+    return jsonify({"status": "success"})
+

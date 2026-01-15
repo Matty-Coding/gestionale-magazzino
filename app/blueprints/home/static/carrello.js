@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            console.log("fetch partito")
             if (!response.ok) {
                 checkoutBtn.disabled = false;
                 checkoutBtn.innerHTML = originalHTML;
@@ -109,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 aggiornaBadge(result.conta_prodotti);
                 alert(result.message);
                 window.location.href = "/miei-ordini";
-
+                return;
             } else {
                 alert(result.message);
                 checkoutBtn.disabled = false;
@@ -138,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
             endpoint = `/carrello/modifica/${id}`;
             nuovaQuantitaCarrello = quantitaCarrello + 1;
             variazioneMagazzino = -1;
-            sincronizzaDisponibilita(id, -1);
 
         } else if (e.target.matches(".decrementa")) {
             endpoint = `/carrello/modifica/${id}`;
