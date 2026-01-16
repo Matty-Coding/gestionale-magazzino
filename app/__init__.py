@@ -6,6 +6,7 @@ from app.models.database import User
 from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime, timezone
+import stripe
 
 
 load_dotenv(BASE_DIR / ".env")
@@ -23,6 +24,9 @@ def create_app():
 
     app.config.update(SESSION_SQLALCHEMY=db)
 
+    # inizializzazione stripe payment
+    stripe.api_key = getenv("STRIPE_SECRET_KEY")
+    
     # ===========================
     # Inizializzazione estensioni
     # ===========================

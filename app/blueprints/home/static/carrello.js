@@ -101,13 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error("HTTP error!");
             }
             const result = await response.json();
-            console.log("fetch completato")
-            console.log("risposta", result)
+
             if (result.status === "success") {
                 carrello.innerHTML = result.html;
                 aggiornaBadge(result.conta_prodotti);
                 alert(result.message);
-                window.location.href = "/miei-ordini";
+                window.location.href = `/pagamento/${result.ordine_id}`;
                 return;
             } else {
                 alert(result.message);

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash, current_app, Response
 from flask_login import current_user, login_required
 from .forms import FornitoreForm, ProdottoForm, UtenteForm, OrdineForm
 from app.models.fornitore_crud import FornitoreCRUD
@@ -9,6 +9,10 @@ from app.models.database import Prodotto, Categoria
 from app.utils.decorators import admin_required
 from app.services.mail_sender import send_email
 from .cart import Cart
+from stripe import PaymentIntent, StripeError, Webhook
+from stripe.checkout import Session
+from app.extensions import csrf
+
 
 home_bp = Blueprint(
     name="home",
@@ -144,6 +148,7 @@ MANAGEMENT_CONFIG = {
         "api_endpoint": "ordine"
     }
 }
+
 
 @home_bp.route("/admin/api/load/<resource_type>", methods=["GET"])
 @login_required
@@ -384,6 +389,47 @@ def svuota_carrello():
     })  
 
 
+# @home_bp.route("/checkout", methods=["GET", "POST"])
+# @login_required
+# def checkout():
+#     cart = Cart()
+#     cart_data = session.get("cart", {})
+
+#     nuovo_ordine = ordinecrud.create_ordine(cliente_id=current_user.id)
+    
+#     cart_items = []
+#     for prodotto_id, quantita in cart_data.items():
+#         prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
+#         if prodotto: 
+#             cart_items.append(prodotto)
+    
+#             dettaglio_ordine = ordinecrud.create_dettagli_ordine(
+#                 ordine_id=nuovo_ordine.id,
+#                 prodotto_id=prodotto.id,
+#                 quantita=quantita,
+#                 prezzo_unitario=prodotto.prezzo
+#             )
+
+#     ordinecrud.update_ordine(ordine=nuovo_ordine, totale=cart.totale(cart_items))
+
+#     send_email(
+#         email = current_user.email,
+#         subject ="Il tuo ordine è stato registrato correttamente",
+#         message = f"<h2>Il tuo ordine {nuovo_ordine.id} è stato registrato correttamente.</h2><br><p>Riceverai ulteriori email di aggiornamento sullo stato del tuo ordine.</p><br><p>Il tuo ordine:<br>ID: {nuovo_ordine.id}<br>Stato: {nuovo_ordine.stato}<br>Prodotto: {dettaglio_ordine.prodotto.nome}<br>Quantità: {dettaglio_ordine.quantita}<br>Prezzo: {dettaglio_ordine.prezzo_unitario}<br>Totale: {nuovo_ordine.totale}</p>"
+#     )
+
+#     cart.svuota()
+
+#     html, conta_prodotti = get_cart_render_data()
+
+#     return jsonify({
+#         "status": "success", 
+#         "message": f"Ordine {nuovo_ordine.id} creato con successo",
+#         "html": html,
+#         "conta_prodotti": conta_prodotti,
+#         "ordine_id": nuovo_ordine.id
+#         })
+    
 @home_bp.route("/checkout", methods=["GET", "POST"])
 @login_required
 def checkout():
@@ -393,37 +439,54 @@ def checkout():
     nuovo_ordine = ordinecrud.create_ordine(cliente_id=current_user.id)
     
     cart_items = []
+    
+    prodotti_html = "<ul>" 
+    
     for prodotto_id, quantita in cart_data.items():
         prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
         if prodotto: 
             cart_items.append(prodotto)
-    
-            dettaglio_ordine = ordinecrud.create_dettagli_ordine(
+            
+            ordinecrud.create_dettagli_ordine(
                 ordine_id=nuovo_ordine.id,
                 prodotto_id=prodotto.id,
                 quantita=quantita,
                 prezzo_unitario=prodotto.prezzo
             )
 
-    ordinecrud.update_ordine(ordine=nuovo_ordine, totale=cart.totale(cart_items))
+            prodotti_html += f"<li>{prodotto.nome} - Quantità: {quantita} - Prezzo: {prodotto.prezzo}€</li>"
+
+    prodotti_html += "</ul>" 
+
+    ordine_totale = cart.totale(cart_items)
+    ordinecrud.update_ordine(ordine=nuovo_ordine, totale=ordine_totale)
 
     send_email(
         email = current_user.email,
         subject ="Il tuo ordine è stato registrato correttamente",
-        message = f"<h2>Il tuo ordine {nuovo_ordine.id} è stato registrato correttamente.</h2><br><p>Riceverai ulteriori email di aggiornamento sullo stato del tuo ordine.</p><br><p>Il tuo ordine:<br>ID: {nuovo_ordine.id}<br>Stato: {nuovo_ordine.stato}<br>Prodotto: {dettaglio_ordine.prodotto.nome}<br>Quantità: {dettaglio_ordine.quantita}<br>Prezzo: {dettaglio_ordine.prezzo_unitario}<br>Totale: {nuovo_ordine.totale}</p>"
+        message = f"""
+            <h2>Il tuo ordine #{nuovo_ordine.id} è stato registrato correttamente.</h2>
+            <p>Riceverai ulteriori email di aggiornamento sullo stato del tuo ordine.</p>
+            <br>
+            <h3>Riepilogo prodotti:</h3>
+            {prodotti_html}
+            <br>
+            <p><strong>Stato:</strong> {nuovo_ordine.stato}</p>
+            <p><strong>Totale pagato:</strong> {ordine_totale}€</p>
+        """
     )
 
     cart.svuota()
-
     html, conta_prodotti = get_cart_render_data()
 
     return jsonify({
         "status": "success", 
         "message": f"Ordine {nuovo_ordine.id} creato con successo",
         "html": html,
-        "conta_prodotti": conta_prodotti
-        })
-    
+        "conta_prodotti": conta_prodotti,
+        "ordine_id": nuovo_ordine.id
+    })    
+
 @home_bp.route("/miei-ordini")
 @login_required
 def miei_ordini():
@@ -434,21 +497,55 @@ def miei_ordini():
 # ===============================================
 # ===========  ADMIN PANEL ORDINI  ==============
 # ===============================================
+
+# def genera_riepilogo_ordine(ordine):
+#     """
+#     Genera un riepilogo dell'ordine in HTML.
+#     """
+#     html = f"<h3>Riepilogo Ordine #{ordine.id}</h3><ul>"
+#     for item in ordine.dettagli:
+#         html += f"""
+#             <li>
+#                 <strong>{item.prodotto.nome}</strong><br>
+#                 Quantità: {item.quantita} - Prezzo: {item.prezzo_unitario}€
+#             </li>
+#         """
+#     html += f"</ul><p><strong>Totale Ordine: {ordine.totale}€</strong></p>"
+#     return html
+
 def genera_riepilogo_ordine(ordine):
     """
-    Genera un riepilogo dell'ordine in HTML.
+    Genera un riepilogo dell'ordine in HTML leggibile, 
+    iterando su tutti i prodotti presenti nei dettagli.
     """
-    html = f"<h3>Riepilogo Ordine #{ordine.id}</h3><ul>"
-    for item in ordine.dettagli:
-        html += f"""
-            <li>
-                <strong>{item.prodotto.nome}</strong><br>
-                Quantità: {item.quantita} - Prezzo: {item.prezzo_unitario}€
-            </li>
-        """
-    html += f"</ul><p><strong>Totale Ordine: {ordine.totale}€</strong></p>"
-    return html
+    
+    html_segments = [
+        f"<h3>Dettagli Ordine #{ordine.id}</h3>",
+        "<table style='width: 100%; border-collapse: collapse;'>",
+        "<thead>",
+        "<tr style='border-bottom: 1px solid #ddd; text-align: left;'>",
+        "<th style='padding: 8px;'>Prodotto</th>",
+        "<th style='padding: 8px;'>Quantità</th>",
+        "<th style='padding: 8px;'>Prezzo Unitario</th>",
+        "</tr>",
+        "</thead>",
+        "<tbody>"
+    ]
 
+    for item in ordine.dettagli:
+        row = f"""
+            <tr style='border-bottom: 1px solid #eee;'>
+                <td style='padding: 8px;'><strong>{item.prodotto.nome}</strong></td>
+                <td style='padding: 8px;'>{item.quantita}</td>
+                <td style='padding: 8px;'>{item.prezzo_unitario}€</td>
+            </tr>
+        """
+        html_segments.append(row)
+
+    html_segments.append("</tbody></table>")
+    html_segments.append(f"<p style='font-size: 18px;'><strong>Totale complessivo: {ordine.totale}€</strong></p>")
+
+    return "".join(html_segments)
 
 @home_bp.route("/admin/management/ordine/modifica/<int:id>", methods=["POST"])
 @login_required
@@ -499,3 +596,110 @@ def elimina_ordine(id):
     ordinecrud.elimina_ordine(ordine_id=id)
     return jsonify({"status": "success"})
 
+# ===========================================
+# ===========  Stripe Checkout  =============                                      
+# ===========================================
+@home_bp.route("/test-stripe")
+def test_stripe():
+    try:
+        intent = PaymentIntent.create(
+            amount=1000,
+            currency="eur"
+        )
+
+        return jsonify({"status": "success", "client_secret": intent.client_secret})
+    
+    except StripeError as e:
+        return jsonify({"status": "error", "message": str(e)})
+    
+
+@home_bp.route("pagamento/<int:ordine_id>")
+@login_required
+def pagamento(ordine_id):
+    ordine = ordinecrud.get_ordine_by_id(ordine_id=ordine_id)
+    if ordine.cliente.id != current_user.id:
+        return redirect(url_for("home.index"))
+
+    if ordine.stato != "PENDING":
+        return redirect(url_for("home.miei_ordini"))
+
+    line_items = []
+    for dettaglio in ordine.dettagli:
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "unit_amount": int(dettaglio.prezzo_unitario * 100),
+                "product_data": {"name": dettaglio.prodotto.nome}
+            },
+            "quantity": dettaglio.quantita
+        })
+
+    session = Session.create(
+        payment_method_types = ["card"],
+        line_items = line_items,
+        mode = "payment",
+        success_url = url_for("home.pagamento_accettato", ordine_id=ordine_id, _external=True),
+        cancel_url = url_for("home.pagamento_rifiutato", ordine_id=ordine_id, _external=True),
+        metadata={"ordine_id": ordine.id}
+    )
+
+    return redirect(session.url)
+
+@home_bp.route("/pagamento-accettato/<int:ordine_id>")
+@login_required
+def pagamento_accettato(ordine_id):
+    ordine = ordinecrud.get_ordine_by_id(ordine_id=ordine_id)
+    if ordine.cliente.id != current_user.id:
+        return redirect(url_for("home.index"))
+    
+    flash("Pagamento completato con successo! Stiamo elaborando il tuo ordine.", "success")
+    return redirect(url_for("home.miei_ordini"))
+
+@home_bp.route("/pagamento-rifiutato/<int:ordine_id>")
+@login_required
+def pagamento_rifiutato(ordine_id):
+    ordine = ordinecrud.get_ordine_by_id(ordine_id=ordine_id)
+    if ordine.cliente.id != current_user.id:
+        return redirect(url_for("home.index"))
+    
+    flash("Pagamento rifiutato! Riprova più tardi.", "error")
+    return redirect(url_for("home.miei_ordini"))
+
+@csrf.exempt
+@home_bp.route("/webhook", methods=["POST"])
+def stripe_webhook():
+    payload = request.get_data()
+    signature_header = request.headers.get("Stripe-Signature")
+    endpoint_secret = current_app.config["STRIPE_WEBHOOK_SECRET"]
+
+    try:
+        event = Webhook.construct_event(
+            payload=payload,
+            sig_header=signature_header,
+            secret=endpoint_secret
+        )
+
+    except:
+        return jsonify({"status": "error", "message": "Invalid signature"}), 
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        ordine_id = session["metadata"]["ordine_id"]
+
+        if ordine_id:
+            ordine = ordinecrud.update_stato(ordine_id=ordine_id, stato="COMPLETATO")
+
+            html = genera_riepilogo_ordine(ordine=ordine)
+            send_email(
+                email = ordinecrud.get_ordine_by_id(ordine_id=ordine_id).cliente.email,
+                subject = f"Aggiornamento Ordine #{ordine_id}: Completato",
+                message = f"""
+                    <h2>Il tuo ordine è stato aggiornato!</h2>
+                    {html}
+                    <br>
+                    <p>Riceverai ulteriori informazioni riguardo la spedizione e la consegna.</p>
+                    <p>Grazie per aver scelto il nostro servizio.</p>
+                """
+                )
+
+    return Response(status=200)

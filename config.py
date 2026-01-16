@@ -27,6 +27,11 @@ class Config:
     AUTHENTICATION_SALT = getenv("AUTHENTICATION_SALT")
     RESET_PASSWORD_SALT = getenv("RESET_PASSWORD_SALT")
 
+    STRIPE_PUBLIC_KEY = getenv("STRIPE_PUBLIC_KEY")
+    STRIPE_SECRET_KEY = getenv("STRIPE_SECRET_KEY")
+
+    STRIPE_WEBHOOK_SECRET = getenv("STRIPE_WEBHOOK_SECRET")
+
 # =========================================================
 # =============== Configurazione per sviluppo =============
 # =========================================================

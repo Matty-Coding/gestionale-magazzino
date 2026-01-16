@@ -19,9 +19,19 @@
 
 {% block main %}
 <div class="p-8 bg-zinc-950 min-h-full">
-    <h1 class="text-3xl font-black text-white mb-8 uppercase italic tracking-tighter">
-        Storico <span class="text-lime-500">Ordini</span>
-    </h1>
+    <div>
+        <h1 class="text-3xl font-black text-white mb-8 uppercase italic tracking-tighter">
+            Storico <span class="text-lime-500">Ordini</span>
+        </h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="bg-lime-500 inline-block px-4 py-2 rounded-full text-white text-xs font-bold">
+                    <i class="bi bi-check"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
 
     <div class="space-y-6">
         {% for ordine in ordini %}
@@ -59,8 +69,16 @@
             <div class="bg-zinc-800/50 p-4 flex justify-between items-center">
                 <span class="text-zinc-400 text-sm italic">Note: {{ ordine.note or 'Nessuna nota' }}</span>
                 <div class="text-right">
-                    <span class="text-zinc-500 text-[10px] uppercase font-bold block">Totale Pagato</span>
+                    <span class="text-zinc-500 text-[10px] uppercase font-bold block">Totale {{ 'da pagare' if ordine.stato != 'CONFERMATO' else 'pagato' }}</span>
                     <span class="text-2xl font-black text-white italic">{{ "%.2f"|format(ordine.totale) }}€</span>
+                    </span>
+                    {% if ordine.stato != 'CONFERMATO' %}
+                        <span>
+                            <button class="p-2 border">
+                                <a href="{{ url_for('home.pagamento', ordine_id=ordine.id) }}">Paga ora</a>
+                            </button>
+                        </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
