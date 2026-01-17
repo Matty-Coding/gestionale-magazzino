@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // feedback visivo elaborazione richiesta
+        const btn = document.querySelector("#submit-btn");
+        const btnText = document.querySelector("#btn-text");
+        const btnSpinner = document.querySelector("#btn-spinner");
+
+        btn.disabled = true;
+        btnText.textContent = "Elaborazione...";
+        btnSpinner.classList.remove("hidden");
+
         const formData = new FormData(e.target);
 
         const data = {
@@ -13,6 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const result = await apiRequest(url, "POST", data);
+
+        btn.disabled = false;
+        btnText.textContent = "Aggiorna";
+        btnSpinner.classList.add("hidden");
 
         if (!result) return;
 

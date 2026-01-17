@@ -63,7 +63,10 @@
         {% endfor %}
       </div>
 
-      {{ form.submit(class="font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-2 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+      <button type="submit" id="submit-btn" class="flex justify-center items-center gap-2 font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-2 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in disabled:opacity-50 disabled:cursor-not-allowed">
+        <span id="btn-text">{{ form.submit.label.text }}</span>
+        <i id="btn-spinner" class="bi bi-arrow-repeat animate-spin hidden"></i>
+    </button>
 
     </form>  
 

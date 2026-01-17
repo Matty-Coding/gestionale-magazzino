@@ -389,47 +389,6 @@ def svuota_carrello():
     })  
 
 
-# @home_bp.route("/checkout", methods=["GET", "POST"])
-# @login_required
-# def checkout():
-#     cart = Cart()
-#     cart_data = session.get("cart", {})
-
-#     nuovo_ordine = ordinecrud.create_ordine(cliente_id=current_user.id)
-    
-#     cart_items = []
-#     for prodotto_id, quantita in cart_data.items():
-#         prodotto = prodottocrud.get_prodotto_by_id(int(prodotto_id))
-#         if prodotto: 
-#             cart_items.append(prodotto)
-    
-#             dettaglio_ordine = ordinecrud.create_dettagli_ordine(
-#                 ordine_id=nuovo_ordine.id,
-#                 prodotto_id=prodotto.id,
-#                 quantita=quantita,
-#                 prezzo_unitario=prodotto.prezzo
-#             )
-
-#     ordinecrud.update_ordine(ordine=nuovo_ordine, totale=cart.totale(cart_items))
-
-#     send_email(
-#         email = current_user.email,
-#         subject ="Il tuo ordine è stato registrato correttamente",
-#         message = f"<h2>Il tuo ordine {nuovo_ordine.id} è stato registrato correttamente.</h2><br><p>Riceverai ulteriori email di aggiornamento sullo stato del tuo ordine.</p><br><p>Il tuo ordine:<br>ID: {nuovo_ordine.id}<br>Stato: {nuovo_ordine.stato}<br>Prodotto: {dettaglio_ordine.prodotto.nome}<br>Quantità: {dettaglio_ordine.quantita}<br>Prezzo: {dettaglio_ordine.prezzo_unitario}<br>Totale: {nuovo_ordine.totale}</p>"
-#     )
-
-#     cart.svuota()
-
-#     html, conta_prodotti = get_cart_render_data()
-
-#     return jsonify({
-#         "status": "success", 
-#         "message": f"Ordine {nuovo_ordine.id} creato con successo",
-#         "html": html,
-#         "conta_prodotti": conta_prodotti,
-#         "ordine_id": nuovo_ordine.id
-#         })
-    
 @home_bp.route("/checkout", methods=["GET", "POST"])
 @login_required
 def checkout():
@@ -497,21 +456,6 @@ def miei_ordini():
 # ===============================================
 # ===========  ADMIN PANEL ORDINI  ==============
 # ===============================================
-
-# def genera_riepilogo_ordine(ordine):
-#     """
-#     Genera un riepilogo dell'ordine in HTML.
-#     """
-#     html = f"<h3>Riepilogo Ordine #{ordine.id}</h3><ul>"
-#     for item in ordine.dettagli:
-#         html += f"""
-#             <li>
-#                 <strong>{item.prodotto.nome}</strong><br>
-#                 Quantità: {item.quantita} - Prezzo: {item.prezzo_unitario}€
-#             </li>
-#         """
-#     html += f"</ul><p><strong>Totale Ordine: {ordine.totale}€</strong></p>"
-#     return html
 
 def genera_riepilogo_ordine(ordine):
     """

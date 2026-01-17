@@ -6,6 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // evita reload della pagina
         e.preventDefault();
 
+        // feedback visivo elaborazione richiesta
+        const btn = document.querySelector("#submit-btn");
+        const btnText = document.querySelector("#btn-text");
+        const btnSpinner = document.querySelector("#btn-spinner");
+
+        btn.disabled = true;
+        btnText.textContent = "Elaborazione...";
+        btnSpinner.classList.remove("hidden");
+
         // recupera i dati del form e li mette in un oggetto
         const formData = new FormData(e.target);
 
@@ -19,6 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const result = await apiRequest(url, "POST", data);
+
+        btn.disabled = false;
+        btnText.textContent = "Registrati";
+        btnSpinner.classList.add("hidden");
 
         // se il client non riceve dati, è stato lanciato un errore dal backend (429)
         if (!result) return;
