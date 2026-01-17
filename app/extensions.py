@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate 
+from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
@@ -18,9 +18,7 @@ migrate = Migrate()
 csrf = CSRFProtect()
 
 limiter = Limiter(
-    key_func=get_remote_address,
-    storage_uri="memory://",
-    headers_enabled=True
+    key_func=get_remote_address, storage_uri="memory://", headers_enabled=True
 )
 
 talisman = Talisman(
@@ -29,6 +27,6 @@ talisman = Talisman(
         "script-src": "'self'",
         "style-src": "'self'",
         "img-src": ["'self'", "data:"],
-        "font-src": ["'self'", "data:"]
+        "font-src": ["'self'", "data:"],
     }
 )

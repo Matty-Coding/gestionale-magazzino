@@ -2,6 +2,7 @@ from .database import Prodotto
 from app.extensions import db
 from app.utils.decorators import db_commiter
 
+
 class ProdottoCrud:
     def __init__(self):
         self.session = db.session
@@ -14,13 +15,13 @@ class ProdottoCrud:
         prodotto_obj = Prodotto(**kwargs, categoria_id=4)
         self.session.add(prodotto_obj)
         return prodotto_obj
-    
+
     def get_prodotto(self, codice: str) -> Prodotto:
         """
         Restituisce il prodotto con il codice specificato.
         """
         return self.session.query(Prodotto).filter_by(codice=codice).first()
-    
+
     def get_prodotto_by_id(self, id: int) -> Prodotto:
         """
         Restituisce il prodotto con l'id specificato.
@@ -38,10 +39,10 @@ class ProdottoCrud:
         """
         Aggiorna il prodotto nel db.
         """
-        
+
         for key, value in kwargs.items():
             setattr(prodotto, key, value)
-        
+
         return prodotto
 
     @db_commiter
@@ -49,9 +50,8 @@ class ProdottoCrud:
         """
         Elimina il prodotto dal db.
         """
-        
+
         self.session.delete(prodotto)
-   
 
     # ================================================
     # ================= UTILITY ======================

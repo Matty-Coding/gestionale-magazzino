@@ -1,6 +1,6 @@
 from flask import Flask
 from config import DevConfig, ProdConfig, BASE_DIR
-from app.extensions import (db, login_manager, session, csrf, talisman, limiter, migrate)
+from app.extensions import db, login_manager, session, csrf, talisman, limiter, migrate
 from app.middleware.limit import MiddleWare
 from app.models.database import User
 from dotenv import load_dotenv
@@ -10,6 +10,7 @@ import stripe
 
 
 load_dotenv(BASE_DIR / ".env")
+
 
 def create_app():
     app = Flask(__name__)
@@ -26,7 +27,7 @@ def create_app():
 
     # inizializzazione stripe payment
     stripe.api_key = getenv("STRIPE_SECRET_KEY")
-    
+
     # ===========================
     # Inizializzazione estensioni
     # ===========================
@@ -37,12 +38,14 @@ def create_app():
     csrf.init_app(app)
     limiter.init_app(app)
     talisman.init_app(app)
-    
+
     # ===================
     # == LoginManager ===
     # ===================
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "Devi effettuare il login per visualizzare questa pagina."
+    login_manager.login_message = (
+        "Devi effettuare il login per visualizzare questa pagina."
+    )
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -72,12 +75,15 @@ def create_app():
     # ======  Blueprints  ======
     # ==========================
     from app.blueprints.home.routes import home_bp
+
     app.register_blueprint(home_bp)
 
     from app.blueprints.auth.routes import auth_bp
+
     app.register_blueprint(auth_bp)
 
     from app.cli import create_admin_command, fake_data_command, reset_db_command
+
     app.cli.add_command(create_admin_command)
     app.cli.add_command(fake_data_command)
     app.cli.add_command(reset_db_command)

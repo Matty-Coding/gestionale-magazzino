@@ -7,6 +7,7 @@ from app.extensions import db
 # Decoratore per verificare se l'utente è admin
 # =============================================
 
+
 def admin_required(f):
     """
     Decoratore per verificare se l'utente è admin.
@@ -16,11 +17,12 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             return redirect(url_for("auth.login"))
-        
+
         if not current_user.is_admin:
             abort(403)  # Forbidden (non hai i permessi necessari)
 
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -31,6 +33,7 @@ def db_commiter(f):
     """
     Decoratore per eseguire commit/rollback sul db.
     """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
@@ -41,5 +44,5 @@ def db_commiter(f):
         except Exception as e:
             db.session.rollback()
             raise e
-            
+
     return decorated_function

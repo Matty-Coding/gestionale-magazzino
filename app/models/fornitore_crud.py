@@ -2,17 +2,14 @@ from app.models.database import User, Fornitore
 from app.extensions import db
 from app.utils.decorators import db_commiter
 
+
 class FornitoreCRUD:
     def __init__(self):
         self.session = db.session
 
     @db_commiter
     def create_fornitore(
-        self,
-        user: User,
-        ragione_sociale: str = None,
-        iva: str = None,
-        tel: str = None
+        self, user: User, ragione_sociale: str = None, iva: str = None, tel: str = None
     ) -> Fornitore:
         """
         Crea un fornitore associato a un utente esistente.
@@ -25,7 +22,7 @@ class FornitoreCRUD:
             ragione_sociale=ragione_sociale,
             partita_iva=iva,
             telefono=tel,
-            user_id=user.id
+            user_id=user.id,
         )
 
         self.session.add(fornitore_obj)

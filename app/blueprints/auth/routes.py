@@ -13,11 +13,12 @@ auth_bp = Blueprint(
     template_folder="templates",
     static_folder="static",
     static_url_path="/auth/static",
-    url_prefix="/auth"
+    url_prefix="/auth",
 )
 
 usercrud = UserCRUD()
 token_service = TokenService()
+
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 @limiter.limit("10/minute")
@@ -30,30 +31,37 @@ def register():
 
         if form.validate():
             if usercrud.get_user_by_email(data.get("email")):
-                return jsonify({"status": "warning", "message": "Email già registrata"})   
+                return jsonify({"status": "warning", "message": "Email già registrata"})
 
             user_obj = usercrud.create_user(
                 username=data.get("username"),
                 email=data.get("email"),
                 password=data.get("password"),
-                ruolo=data.get("ruolo")
+                ruolo=data.get("ruolo"),
             )
 
             token = token_service.get_auth_token(user_obj.email)
             url = url_for("auth.verify_email", token=token, _external=True)
-            
+
             try:
                 send_email(
                     email=user_obj.email,
                     subject="Verifica email",
-                    message=f"Per verificare la tua email <a href='{url}'>clicca qui</a><br> In alternativa incolla il seguente link nel tuo browser: {url}"
+                    message=f"Per verificare la tua email <a href='{url}'>clicca qui</a><br> In alternativa incolla il seguente link nel tuo browser: {url}",
                 )
-                
-                return jsonify({"status": "success", "message": "Ti abbiamo mandato una email di verifica"})
-            
+
+                return jsonify(
+                    {
+                        "status": "success",
+                        "message": "Ti abbiamo mandato una email di verifica",
+                    }
+                )
+
             except Exception:
-                return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
- 
+                return jsonify(
+                    {"status": "error", "message": "Errore nell'invio dell'email"}
+                )
+
         return jsonify({"status": "error", "message": form.errors})
 
     return render_template("register.html", form=form)
@@ -64,10 +72,21 @@ def verify_email(token):
     email = token_service.check_auth_token(token)
     if email:
         usercrud.get_user_by_email(email).validate_email
-        return redirect(url_for("auth.login", result="success", message="Email verificata correttamente, puoi effettuare il login"))
+        return redirect(
+            url_for(
+                "auth.login",
+                result="success",
+                message="Email verificata correttamente, puoi effettuare il login",
+            )
+        )
 
-    return render_template("login.html", form=LoginForm(), result="error", message="Link non valido o scaduto")
-        
+    return render_template(
+        "login.html",
+        form=LoginForm(),
+        result="error",
+        message="Link non valido o scaduto",
+    )
+
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limiter.limit("5/minute")
@@ -93,25 +112,38 @@ def login():
             if not user_obj.is_verified:
                 token = token_service.get_auth_token(user_obj.email)
                 url = url_for("auth.verify_email", token=token, _external=True)
-                
+
                 try:
                     send_email(
                         email=user_obj.email,
                         subject="Verifica email",
-                        message=f"Per verificare la tua email, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}"
+                        message=f"Per verificare la tua email, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}",
                     )
-                    
-                    return jsonify({"status": "success", "message": "Ti abbiamo mandato una nuova email di verifica"})
-                
+
+                    return jsonify(
+                        {
+                            "status": "success",
+                            "message": "Ti abbiamo mandato una nuova email di verifica",
+                        }
+                    )
+
                 except Exception:
-                    return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
+                    return jsonify(
+                        {"status": "error", "message": "Errore nell'invio dell'email"}
+                    )
 
             login_user(user_obj, remember=data.get("remember"))
-            
-            return jsonify({"status": "success", "message": "Login avvenuto con successo", "redirect": url_for("home.dashboard")})
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Login avvenuto con successo",
+                    "redirect": url_for("home.dashboard"),
+                }
+            )
 
         return jsonify({"status": "error", "message": form.errors})
-    
+
     return render_template("login.html", form=form)
 
 
@@ -135,8 +167,9 @@ def block():
 
     if current_user.is_authenticated:
         logout_user()
-    
+
     return render_template("block.html", timer=timer)
+
 
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -159,16 +192,20 @@ def forgot_password():
                 send_email(
                     email=user_obj.email,
                     subject="Reset password",
-                    message=f"Per resettare la password, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}"
+                    message=f"Per resettare la password, clicca <a href='{url}'>qui</a>\n In alternativa incolla il seguente link nel tuo browser: {url}",
                 )
-                
-                return jsonify({"status": "success", "message": "Ti abbiamo mandato una email"})
-            
+
+                return jsonify(
+                    {"status": "success", "message": "Ti abbiamo mandato una email"}
+                )
+
             except Exception:
-                return jsonify({"status": "error", "message": "Errore nell'invio dell'email"})
+                return jsonify(
+                    {"status": "error", "message": "Errore nell'invio dell'email"}
+                )
 
         return jsonify({"status": "error", "message": form.errors})
-    
+
     return render_template("forgot-password.html", form=form)
 
 
@@ -178,7 +215,9 @@ def verify_token(token):
     if email:
         return redirect(url_for("auth.reset_password", token=token))
 
-    return redirect("auth.forgot_password", result="error", message="Link non valido o scaduto")
+    return redirect(
+        "auth.forgot_password", result="error", message="Link non valido o scaduto"
+    )
 
 
 @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -196,10 +235,19 @@ def reset_password(token):
             if email:
                 usercrud.reset_password(
                     user=usercrud.get_user_by_email(email),
-                    password=data.get("password")
+                    password=data.get("password"),
                 )
 
-                return jsonify({"status": "success", "redirect": url_for("auth.login", result="success", message="Password resettata correttamente")})
+                return jsonify(
+                    {
+                        "status": "success",
+                        "redirect": url_for(
+                            "auth.login",
+                            result="success",
+                            message="Password resettata correttamente",
+                        ),
+                    }
+                )
 
         return jsonify({"status": "error", "message": form.errors})
 
@@ -217,33 +265,48 @@ def update_password():
         form = ResetPasswordForm(data=data)
 
         if form.validate():
-            usercrud.reset_password(
-                user=current_user,
-                password=data.get("password")
-            )
+            usercrud.reset_password(user=current_user, password=data.get("password"))
 
-            return jsonify({"status": "success", "message": "Password aggiornata correttamente", "redirect": url_for("home.dashboard")})
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Password aggiornata correttamente",
+                    "redirect": url_for("home.dashboard"),
+                }
+            )
 
         return jsonify({"status": "error", "message": form.errors})
 
     return render_template("update-password.html", form=form)
 
+
 @auth_bp.route("/update-username", methods=["GET", "POST"])
 def update_username():
     from re import match
+
     data = request.get_json()
 
     new_username = data.get("username")
 
     if not new_username:
         return jsonify({"status": "error", "message": "Devi inserire un username!"})
-    
+
     if len(new_username) < 3 or len(new_username) > 20:
-        return jsonify({"status": "error", "message": "L'username deve essere compreso tra 3 e 20 caratteri!"})
-    
+        return jsonify(
+            {
+                "status": "error",
+                "message": "L'username deve essere compreso tra 3 e 20 caratteri!",
+            }
+        )
+
     if not match(r"^[A-Za-z][A-Za-z0-9 ]*$", new_username):
-        return jsonify({"status": "error", "message": "L'username deve iniziare con una lettera e contenere solo lettere, numeri o spazi!"})
-    
+        return jsonify(
+            {
+                "status": "error",
+                "message": "L'username deve iniziare con una lettera e contenere solo lettere, numeri o spazi!",
+            }
+        )
+
     usercrud.update_username(current_user, new_username)
 
     return jsonify({"status": "success"})
