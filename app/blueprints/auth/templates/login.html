@@ -9,10 +9,10 @@
 {% endblock %}
 
 {% block main %}
-<div class="flex max-w-5xl mx-auto h-max justify-between items-center mt-12">
+<div class="flex flex-col gap-10 xl:gap-0 xl:flex-row px-5 max-w-5xl mx-auto h-max justify-between items-center mt-5 xl:mt-10">
   <div class="flex-1 flex flex-col gap-5 px-8">
-    <h1 class="text-6xl font-bold text-center">Bentornato!</h1>
-    <p class="text-2xl font-semibold text-center">Accedi per continuare ad usufruire delle funzionalità che abbiamo pensato per te.</p>
+    <h1 class="text-5xl xl:text-6xl font-bold text-center">Bentornato!</h1>
+    <p class="text-xl xl:text-2xl font-semibold text-center">Accedi per continuare ad usufruire delle funzionalità che abbiamo pensato per te.</p>
   </div>
   <div class="flex-1 bg-[#2e201292] border rounded-xl p-10 mx-auto">
 
@@ -65,7 +65,7 @@
 
     </form>  
     
-    <div class="flex justify-between flex-col items-center gap-5 mt-3 text-lg">
+    <div class="flex justify-between flex-col items-center gap-5 mt-3 text-md xl:text-lg">
       <p>
         Non hai ancora un account? 
         <a href="{{ url_for('auth.register') }}" class="text-amber-500 font-semibold hover:underline">Registrati!</a>

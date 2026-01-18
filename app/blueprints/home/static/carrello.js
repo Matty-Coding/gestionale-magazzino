@@ -26,8 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         disponibili += delta;
         article.setAttribute("data-quantita", disponibili);
 
-        const quantitaProdotto = article.querySelector("p.conteggio");
-
         if (quantitaProdotto) {
             quantitaProdotto.innerHTML = `<span class="font-semibold">Quantità: </span>${disponibili}`;
         }
