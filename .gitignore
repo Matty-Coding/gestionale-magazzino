@@ -3,7 +3,6 @@ gestionale-magazzino
 .env
 instance
 __pycache__
-test
 migrations
 .vscode
 node_modules
