@@ -1,11 +1,11 @@
-<div class="relative group">
-  <div class="cursor-pointer flex gap-1 items-center">
+<div id="tendina" class="relative group">
+  <div id="apri-menu" class="cursor-pointer flex gap-1 items-center">
     <span id="username" class="mr-2 font-bold text-2xl">{{ current_user.username }}</span>
-    <i class="bi bi-chevron-down transition-transform duration-300 group-hover:rotate-180"></i>
+    <i id="freccia" class="bi bi-chevron-down transition-transform duration-300 group-hover:rotate-180"></i>
   </div>
 
   <!-- Dropdown -->
-  <div
+  <div id="menu"
     class="absolute top-6/12 right-0 w-max pt-2 invisible opacity-0 translate-y-2 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-50">
     <div class="bg-black/90 backdrop-blur-md border border-white/50 rounded-lg shadow-xl overflow-hidden">
       <ul class="flex flex-col rounded-lg">

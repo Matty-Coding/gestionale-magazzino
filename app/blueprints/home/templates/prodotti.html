@@ -5,18 +5,19 @@
 {% endblock %}
 
 {% block header %}
-<div class="flex h-full justify-between px-5">
+<div class="flex items-center justify-between">
   {% include '/components/logo.html' %}
-  <h1 class="text-5xl py-2 text-center font-bold">I nostri prodotti</h1>
   {% include '/components/navbar.html' %}
 </div>
 {% endblock %}
 
 {% block main %}
-  <div class="flex items-center mt-5 h-11/12">
+  <h1 class="text-3xl md:text-4xl py-2 text-center font-bold">I nostri prodotti</h1>
+
+  <div class="flex h-[80%] items-center mt-5 md:mt-16 px-3">
 
     <!-- freccia sinistra -->
-    <div id="precedente" class="p-3">
+    <div id="precedente" class="hidden md:block p-3">
       <a href="?page={{ prodotti.prev_num }}">
         <i class="bi bi-chevron-compact-left text-7xl"></i>
       </a>
@@ -26,7 +27,7 @@
     <div id="container-prodotti" class="flex-1 h-full overflow-y-scroll"></div>
 
     <!-- freccia destra -->
-    <div id="successiva" class="p-3">
+    <div id="successiva" class="hidden md:block p-3">
       <a href="?page={{ prodotti.next_num }}">
         <i class="bi bi-chevron-compact-right text-7xl"></i>
       </a>
@@ -34,7 +35,24 @@
 
   </div>
 
-  <div id="paginazione" class="-translate-y-4 text-center text-2xl font-semibold">Pagina {{ prodotti.page }} di {{ prodotti.pages }}</div>
+  <div class="flex justify-between items-center px-3 md:text-xl md:justify-center">
+    <div id="precedente-mobile" class="block md:hidden p-3">
+      <a href="?page={{ prodotti.prev_num }}">
+        <i class="bi bi-chevron-compact-left text-4xl"></i>
+      </a>
+    </div>
+
+    <span id="paginazione">
+      Pagina {{ prodotti.page }} di {{ prodotti.pages }}
+    </span>
+
+    <div id="successiva-mobile" class="block md:hidden p-3">
+      <a href="?page={{ prodotti.next_num }}">
+        <i class="bi bi-chevron-compact-right text-4xl"></i>
+      </a>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block javascript %}

@@ -33,4 +33,4 @@ async function apiRequest(url, method = "POST", data = {}) {
     }
 }
 
-// setInterval(() => window.location.reload(), 5000);
+// setInterval(() => window.location.reload(), 10000);

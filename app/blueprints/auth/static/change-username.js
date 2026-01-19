@@ -8,6 +8,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateUrl = openBtn.getAttribute("data-url");
 
+    // apri menu tendina con click
+    const tendina = document.querySelector("#tendina");
+    const apriMenu = document.querySelector("#apri-menu");
+    const freccia = document.querySelector("#apri-menu i");
+    const menu = document.querySelector("#menu");
+
+    apriMenu.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const isOpen = menu.classList.contains("opacity-100");
+
+        if (!isOpen) {
+            freccia.classList.add("rotate-180");
+            menu.classList.remove("invisible", "opacity-0", "translate-y-2");
+            menu.classList.add("visible", "opacity-100", "translate-y-0");
+        } else {
+            chiudiMenu();
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!tendina.contains(e.target)) {
+            chiudiMenu();
+        }
+    });
+
+    function chiudiMenu() {
+        freccia.classList.remove("rotate-180");
+        menu.classList.remove("visible", "opacity-100", "translate-y-0");
+        menu.classList.add("invisible", "opacity-0", "translate-y-2");
+    }
+
     openBtn?.addEventListener("click", () => {
         modal.classList.remove("hidden");
         modal.classList.add("flex");

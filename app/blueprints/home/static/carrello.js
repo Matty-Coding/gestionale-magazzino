@@ -3,6 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const carrello = document.querySelector("#carrello");
     const contaElementi = document.querySelector("#conta-elementi");
 
+    // apri carrello con click
+    const apriCarrello = document.querySelector("#apri-carrello");
+    apriCarrello.addEventListener("click", (e) => {
+        e.stopPropagation();
+        carrello.classList.toggle("hidden");
+    })
+
+    // chiudi carrello con click fuori
+    document.addEventListener("click", (e) => {
+        if (!apriCarrello.contains(e.target) && !carrello.contains(e.target)) {
+            if (!carrello.classList.contains("hidden")) {
+                carrello.classList.add("hidden");
+            }
+        }
+    })
+
     // funzione per aggiornare badge
     function aggiornaBadge(conteggio) {
         contaElementi.textContent = conteggio;
