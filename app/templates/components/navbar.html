@@ -1,6 +1,26 @@
+<<<<<<< HEAD
 <nav class="flex items-center">
   <ul class="flex-1 flex justify-end items-center h-full gap-3 text-lg font-semibold">
     <li><a href="{{ url_for('home.dashboard') }}" class="flex gap-1 hover:font-bold"><i class="bi bi-table"></i>Dashboard</a></li>
     <li><a href="{{ url_for('auth.login') }}" class="flex gap-1 hover:font-bold"><i class="bi bi-person-circle"></i>Accedi</a></li>
+=======
+<nav>
+  <ul class="flex justify-end items-center gap-4 md:gap-8 text-lg xl:text-xl font-semibold">
+    <li>
+      <a href="{{ url_for('home.dashboard') }}" 
+         class="flex items-center gap-2 hover:text-amber-500 transition-colors group">
+        <i class="bi bi-table text-xl md:text-base"></i>
+        <span class="hidden md:inline">Dashboard</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="{{ url_for('auth.login') }}" 
+         class="flex items-center gap-2 hover:text-amber-500 transition-colors group">
+        <i class="bi bi-person-circle text-xl md:text-base"></i>
+        <span class="hidden md:inline">Accedi</span>
+      </a>
+    </li>
+>>>>>>> dev
   </ul>
 </nav>

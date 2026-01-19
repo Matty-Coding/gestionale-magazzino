@@ -3,18 +3,24 @@
 {% block title %} Gestionale Magazzino | Login {% endblock %}
 
 {% block header %}
-<div class="h-full px-5 flex items-center text-xl font-semibold cursor-pointer hover:underline">
+<div class="text-xl font-semibold cursor-pointer hover:text-amber-500/80">
   <a href="{{ url_for('home.index') }}"><i class="bi bi-arrow-left mr-2"></i>Torna alla home</a>
 </div>
 {% endblock %}
 
 {% block main %}
+<<<<<<< HEAD
 <div class="flex flex-col gap-10 xl:gap-0 xl:flex-row px-5 max-w-5xl mx-auto h-max justify-between items-center mt-5 xl:mt-10">
   <div class="flex-1 flex flex-col gap-5 px-8">
     <h1 class="text-5xl xl:text-6xl font-bold text-center">Bentornato!</h1>
     <p class="text-xl xl:text-2xl font-semibold text-center">Accedi per continuare ad usufruire delle funzionalità che abbiamo pensato per te.</p>
+=======
+<div class="flex flex-col lg:flex-row gap-5 max-w-5xl mx-auto justify-center items-center mt-[5%]">
+  <div class="flex-1 px-8">
+    <h1 class="text-5xl font-bold text-center">Bentornato!</h1>
+>>>>>>> dev
   </div>
-  <div class="flex-1 bg-[#2e201292] border rounded-xl p-10 mx-auto">
+  <div class="flex-1 bg-black/50 border rounded-xl p-10 mx-auto">
 
     <!-- Flash message -->
     <div id="flash" class="hidden py-2 px-4 text-black rounded">
@@ -40,7 +46,7 @@
     {% endif %}
     
     <form id="login-form" action="{{ url_for('auth.login') }}" method="post" novalidate 
-      class="flex flex-col gap-2 text-lg">
+      class="flex flex-col gap-1 text-lg">
 
       {{ form.hidden_tag() }}
 
@@ -67,7 +73,7 @@
     
     <div class="flex justify-between flex-col items-center gap-5 mt-3 text-md xl:text-lg">
       <p>
-        Non hai ancora un account? 
+        Non hai un account? 
         <a href="{{ url_for('auth.register') }}" class="text-amber-500 font-semibold hover:underline">Registrati!</a>
       </p>
       <a href="{{ url_for('auth.forgot_password') }}" class=" text-amber-500 font-semibold hover:underline">Password dimenticata?</a>

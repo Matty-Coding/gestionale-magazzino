@@ -29,15 +29,19 @@
 
 <body 
   class="bg-[url('/static/images/hero.png')] bg-no-repeat bg-fixed bg-cover bg-center 
+<<<<<<< HEAD
   flex flex-col min-h-dvh text-white backdrop-brightness-50 overflow-x-hidden">
+=======
+  flex flex-col w-full h-screen text-white backdrop-brightness-50 overflow-hidden">
+>>>>>>> dev
 
   <!-- header -->
-  <header class="h-20 p-3 sticky top-0">
+  <header class="flex-none py-3 px-5 z-10">
     {% block header %}{% endblock %}
   </header>
   
   <!-- main per contenuto core della pagina -->
-  <main class="flex-1 overflow-y-scroll">
+  <main class="flex-1 overflow-y-scroll custom-scrollbar">
     {% block main %}{% endblock %}
   </main>
 
