@@ -32,3 +32,5 @@ async function apiRequest(url, method = "POST", data = {}) {
         throw error;
     }
 }
+
+// setInterval(() => window.location.reload(), 5000);

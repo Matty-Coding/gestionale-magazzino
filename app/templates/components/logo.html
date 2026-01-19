@@ -1,9 +1,9 @@
-<div class="h-full">
+<div class="w-10 h-10 md:w-14 md:h-14 transition-transform hover:scale-110">
   <a href="{{ url_for('home.index') }}">
-  <img 
-    class="object-contain w-full h-full rounded-full" 
-    src="{{ url_for('static', filename='logo.png') }}" 
-    alt="logo"
-  >
+    <img 
+      class="object-contain w-full h-full rounded-full shadow-lg border border-white/10" 
+      src="{{ url_for('static', filename='logo.png') }}" 
+      alt="logo"
+    >
   </a>
 </div>

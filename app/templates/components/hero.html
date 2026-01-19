@@ -1,26 +1,28 @@
-<section>
-  <h1 class="text-7xl font-bold text-center p-10">
+<section class="max-w-7xl mx-auto flex flex-col justify-center items-center px-6 h-full min-h-[60vh]">
+  
+  <h1 class="text-5xl lg:text-7xl font-bold text-center leading-tight">
     Software Gestionale
   </h1>
-
-  <p class="text-3xl font-semibold text-center w-6xl py-5 px-10 mx-auto">
-    Monitora scorte, ordini e fornitori con un sistema scalabile e sicuro,
-    progettato per aiutarti a gestire il tuo magazzino con efficienza e divisione dei compiti.
+  
+  <p class="max-w-2xl text-xl lg:text-3xl font-medium text-center mt-6 opacity-90">
+    Gestisci il tuo magazzino in modo intuitivo, semplice e sicuro.
   </p>
 
-  <div class="h-20 mt-10 flex justify-center items-center gap-10">
-    <a href="{{ url_for('auth.login') }}" class="bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 
-  w-fit text-2xl font-semibold border rounded-xl py-2 px-4 
-  transition-all duration-200 ease-in 
-  hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl">
+  <div class="mt-12 flex flex-col sm:flex-row justify-center items-center gap-5 sm:gap-10 w-full">
+    
+    <a href="{{ url_for('auth.login') }}" 
+       class="w-full sm:w-auto text-center bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 
+              text-xl lg:text-2xl font-semibold border border-white/20 rounded-xl py-3 px-8 
+              transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]">
       Inizia ora
     </a>
 
-    <a href="{{ url_for('home.prodotti') }}" class="bg-linear-to-tr from-stone-700 via-stone-600 to-stone-500 
-  w-fit text-2xl font-semibold border rounded-xl py-2 px-4 
-  transition-all duration-200 ease-in 
-  hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl">
+    <a href="{{ url_for('home.prodotti') }}" 
+       class="w-full sm:w-auto text-center bg-linear-to-tr from-stone-700 via-stone-600 to-stone-500 
+              text-xl lg:text-2xl font-semibold border border-white/20 rounded-xl py-3 px-8 
+              transition-all duration-300 hover:scale-105 hover:bg-stone-600">
       I nostri prodotti
     </a>
+    
   </div>
 </section>

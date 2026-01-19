@@ -36,7 +36,7 @@ def create_app():
     login_manager.init_app(app)
     session.init_app(app)
     csrf.init_app(app)
-    limiter.init_app(app)
+    # limiter.init_app(app)
     talisman.init_app(app)
 
     # ===================

@@ -63,18 +63,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
 
             case "error":
-                flash.classList.add("bg-red-400");
-                flashIcon.className = "bi-exclamation-triangle-fill";
-                flashMessage.textContent = result.message;
-                flash.classList.remove("hidden");
+                if (result.message === "Errore nell'invio dell'email") {
+                    flash.classList.add("bg-red-400");
+                    flashIcon.className = "bi-exclamation-triangle-fill";
+                    flashMessage.textContent = result.message;
+                    flash.classList.remove("hidden");
 
-                setTimeout(() => {
-                    flash.classList.add("hidden");
-                    flash.classList.remove("bg-red-400");
-                    flashIcon.className = "";
-                    flashMessage.textContent = "";
-                }, 3000);
+                    setTimeout(() => {
+                        flash.classList.add("hidden");
+                        flash.classList.remove("bg-red-400");
+                        flashIcon.className = "";
+                        flashMessage.textContent = "";
+                    }, 5000);
 
+                } else {
+                    for (const [key, value] of Object.entries(result.message)) {
+                        const errorElement = document.querySelector(`#${key}-error`);
+                        errorElement.textContent = value;
+                        errorElement.classList.remove("hidden");
+
+                        setTimeout(() => {
+                            errorElement.classList.add("hidden");
+                        }, 5000);
+                    }
+                }
                 break;
         }
     });

@@ -3,20 +3,21 @@
 {% block title %} Gestionale Magazzino | Registrazione Utente {% endblock %}
 
 {% block header %}
-  <div class="h-full px-5 flex items-center text-xl font-semibold cursor-pointer hover:underline">
-    <a href="{{ url_for('home.index') }}"><i class="bi bi-arrow-left mr-2"></i>Torna alla home</a>
+  <div class="text-xl font-semibold cursor-pointer hover:text-amber-500/80">
+    <a href="{{ url_for('home.index') }}"><i class="bi bi-arrow-left mr-2"></i>
+      Torna alla home
+    </a>
   </div>
 {% endblock %}
 
 {% block main %}
-<div class="flex max-w-5xl mx-auto h-max justify-between items-center mt-10">
+<div class="flex flex-col lg:flex-row gap-5 max-w-5xl mx-auto justify-center items-center mt-[5%]">
   
-  <div class="flex-1 flex flex-col gap-5 px-8">
-    <h1 class="text-6xl font-bold text-center">Benvenuto!</h1>
-    <p class="text-2xl font-semibold text-center">Registrati per accedere a tutte le funzionalità che abbiamo pensato per te.</p>
+  <div class="flex-1 px-8">
+    <h1 class="text-5xl font-bold text-center">Benvenuto!</h1>
   </div>
   
-  <div class="flex-1 bg-[#2e201292] border rounded-xl p-10 mx-auto">
+  <div class="flex-1 bg-black/50 border rounded-xl p-10 mx-auto">
 
     <!-- Flash message -->
     <div id="flash" class="hidden py-2 px-4 text-black rounded">
@@ -31,21 +32,21 @@
 
       {{ form.username.label(class="font-semibold text-xl") }}
       {{ form.username(class="border-t border-white py-2 px-3 outline-none placeholder:italic placeholder:text-xl focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
-      <small id="username-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+      <small id="username-error" class="hidden p-1 text-black text-center bg-red-500/60 rounded"></small>
 
       {{ form.email.label(class="font-semibold text-xl") }}
       {{ form.email(class="border-t border-white py-2 px-3 outline-none placeholder:italic placeholder:text-xl focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
-      <small id="email-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+      <small id="email-error" class="hidden p-1 text-black text-center bg-red-500/60 rounded"></small>
 
       {{ form.password.label(class="font-semibold text-xl") }}
       {{ form.password(class="border-t border-white py-2 px-3 outline-none placeholder:text-2xl
       focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
-      <small id="password-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+      <small id="password-error" class="hidden p-1 text-black text-center bg-red-500/60 rounded"></small>
 
       {{ form.password2.label(class="font-semibold text-xl") }}
       {{ form.password2(class="border-t border-white py-2 px-3 outline-none placeholder:text-2xl
       focus:placeholder:text-transparent focus:border-none focus:ring-2 focus:ring-amber-500 focus:rounded-md") }}
-      <small id="password2-error" class="hidden p-1 text-black bg-red-400 rounded"></small>
+      <small id="password2-error" class="hidden p-1 text-black text-center bg-red-500/60 rounded"></small>
 
       <div class="w-full flex gap-2 justify-between my-2">
         {% for subfield in form.ruolo %}

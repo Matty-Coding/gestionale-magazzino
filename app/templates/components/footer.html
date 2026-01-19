@@ -1,53 +1,56 @@
-<footer class="h-20" id="footer">
-  <div class="mb-0 h-20 flex flex-col">
+{% block footer %}
+<footer class="flex-none bg-black/20 backdrop-blur-sm border-t border-white/10" id="footer">
+  <div class="flex flex-col py-4 w-full">
 
-    <nav class="px-10">
+    <nav class="px-4 md:px-10">
+      <ul class="flex flex-wrap justify-center md:justify-around gap-4 md:gap-6">
 
-      <ul class="flex justify-around gap-3">
         <li>
-          <a href="tel:+39 123456789" class="flex gap-2 text-xl hover:underline hover:font-bold">
+          <a href="tel:000000000000"
+            class="flex items-center gap-2 text-lg md:text-xl hover:text-amber-500/80 transition-all">
             <i class="bi bi-telephone-fill"></i>
-            Chiama
+            <span class="hidden sm:inline">Chiama</span>
           </a>
         </li>
 
         <li>
-          <a href="mailto:mailprova@mail.it" class="flex gap-2 text-xl hover:underline hover:font-bold">
+          <a href="mailto:email@example.it"
+            class="flex items-center gap-2 text-lg md:text-xl hover:text-amber-500/80 transition-all">
             <i class="bi bi-envelope-fill"></i>
-            E-mail
+            <span class="hidden sm:inline">E-mail</span>
           </a>
         </li>
 
         <li>
-          <a href="https://it.linkedin.com/" target="_blank" noreferrer noopener
-            class="flex gap-2 text-xl hover:underline hover:font-bold">
+          <a href="https://it.linkedin.com/" target="_blank" rel="noreferrer noopener"
+            class="flex items-center gap-2 text-lg md:text-xl hover:text-amber-500/80">
             <i class="bi bi-linkedin"></i>
-            Lavora
+            <span class="hidden sm:inline">Lavora</span>
           </a>
         </li>
-
+        
         <li>
-          <a href="https://www.whatsapp.com/?lang=it" target="_blank" noreferrer noopener
-            class="flex gap-2 text-xl hover:underline hover:font-bold">
+          <a href="https://www.whatsapp.com/" target="_blank" rel="noreferrer noopener"
+            class="flex items-center gap-2 text-lg md:text-xl hover:text-amber-500/80">
             <i class="bi bi-whatsapp"></i>
-            Messaggia
+            <span class="hidden sm:inline">Messaggia</span>
           </a>
         </li>
 
         <li>
-          <a href="https://github.com/Matty-Coding" target="_blank" noreferrer noopener
-            class="flex gap-2 text-xl hover:underline hover:font-bold">
+          <a href="https://github.com/Matty-Coding" target="_blank" rel="noreferrer noopener"
+            class="flex items-center gap-2 text-lg md:text-xl hover:text-amber-500/80">
             <i class="bi bi-github"></i>
-            Matty-Coding
+            <span class="hidden sm:inline">GitHub</span>
           </a>
         </li>
       </ul>
-
     </nav>
 
-    <div class="flex-1 flex items-center text-lg px-5">
-      <p>&copy; {{ current_year }} Tutti i diritti sono riservati all'autore.</p>
+    <div class="mt-3 flex justify-center items-center text-sm md:text-base opacity-70 px-5 text-center">
+      <p>&copy; {{ current_year }} Tutti i diritti riservati all'autore.</p>
     </div>
 
   </div>
 </footer>
+{% endblock %}
