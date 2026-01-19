@@ -418,9 +418,6 @@
   .h-\[90\%\] {
     height: 90%;
   }
-  .h-dvh {
-    height: 100dvh;
-  }
   .h-full {
     height: 100%;
   }
@@ -451,9 +448,6 @@
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
-  .w-6xl {
-    width: var(--container-6xl);
-  }
   .w-8 {
     width: calc(var(--spacing) * 8);
   }
@@ -477,9 +471,6 @@
   }
   .w-max {
     width: max-content;
-  }
-  .w-screen {
-    width: 100vw;
   }
   .max-w-5xl {
     max-width: var(--container-5xl);
@@ -533,9 +524,6 @@
   }
   .flex-col {
     flex-direction: column;
-  }
-  .flex-col-reverse {
-    flex-direction: column-reverse;
   }
   .flex-wrap {
     flex-wrap: wrap;
@@ -752,9 +740,6 @@
   }
   .bg-\[\#2e201292\] {
     background-color: #2e201292;
-  }
-  .bg-amber-500 {
-    background-color: var(--color-amber-500);
   }
   .bg-amber-800\/70 {
     background-color: color-mix(in srgb, oklch(47.3% 0.137 46.201) 70%, transparent);
@@ -1027,9 +1012,6 @@
   }
   .py-4 {
     padding-block: calc(var(--spacing) * 4);
-  }
-  .py-5 {
-    padding-block: calc(var(--spacing) * 5);
   }
   .py-20 {
     padding-block: calc(var(--spacing) * 20);
@@ -1758,11 +1740,6 @@
   .xl\:py-5 {
     @media (width >= 80rem) {
       padding-block: calc(var(--spacing) * 5);
-    }
-  }
-  .xl\:text-start {
-    @media (width >= 80rem) {
-      text-align: start;
     }
   }
   .xl\:text-2xl {
