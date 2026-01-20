@@ -1,24 +1,24 @@
 <table class="w-full text-left border-collapse">
   <thead class="sticky top-0 bg-zinc-800 text-gray-400 text-sm uppercase">
     <tr>
-      <th class="p-4 border-b border-white/10">Username</th>
-      <th class="p-4 border-b border-white/10">Email</th>
-      <th class="p-4 border-b border-white/10">Ruolo</th>
-      <th class="p-4 border-b border-white/10 text-center">Verificato</th>
+      <th class="text-center p-4 border-b border-white/10 hidden md:table-cell">Username</th>
+      <th class="text-center p-4 border-b border-white/10">Email</th>
+      <th class="text-center p-4 border-b border-white/10 hidden md:table-cell">Ruolo</th>
+      <th class="p-4 border-b border-white/10 text-center hidden md:table-cell">Verificato</th>
       <th class="p-4 border-b border-white/10 text-center">Azioni</th>
     </tr>
   </thead>
   <tbody class="text-gray-300">
     {% for utente in items %}
     <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-      <td class="p-4 font-mono text-lime-400">{{ utente.username }}</td>
-      <td class="p-4">{{ utente.email }}</td>
-      <td class="p-4 text-sm">
+      <td class="text-center p-4 font-mono text-lime-400 hidden md:table-cell">{{ utente.username }}</td>
+      <td class="text-center p-4">{{ utente.email }}</td>
+      <td class="text-center p-4 text-sm hidden md:table-cell">
         <span class="px-2 py-1 rounded bg-zinc-800 border border-white/10 uppercase text-xs">
           {{ utente.ruolo }}
         </span>
       </td>
-      <td class="p-4 text-center">
+      <td class="p-4 text-center hidden md:table-cell">
         {% if utente.verificato %}
           <i class="bi bi-patch-check-fill text-lime-500" title="Verificato"></i>
         {% else %}

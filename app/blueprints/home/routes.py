@@ -102,34 +102,40 @@ def dashboard():
             )
 
 
-@home_bp.post("/update-fornitore-data")
+@home_bp.route("/update-fornitore-data", methods=["POST"])
 @login_required
 def update_fornitore_data():
-    data = request.get_json()
-    form = FornitoreForm(data=data)
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "error", "message": "Dati mancanti"})
 
-    if not form.validate():
-        return jsonify({"status": "error"})
+        form = FornitoreForm(data=data)
 
-    fornitore_obj = fornitorecrud.get_fornitore(user_id=current_user.id)
+        if not form.validate():
+            return jsonify({"status": "error", "errors": form.errors})
 
-    if not fornitore_obj:
-        fornitore_obj = fornitorecrud.create_fornitore(
-            user=current_user,
-            ragione_sociale=data.get("ragione_sociale"),
-            partita_iva=data.get("partita_iva"),
-            telefono=data.get("telefono"),
-        )
+        fornitore_obj = fornitorecrud.get_fornitore(user_id=current_user.id)
 
-    else:
-        fornitorecrud.update_fornitore(
-            user_id=current_user.id,
-            ragione_sociale=data.get("ragione_sociale"),
-            partita_iva=data.get("partita_iva"),
-            telefono=data.get("telefono"),
-        )
+        if not fornitore_obj:
+            fornitorecrud.create_fornitore(
+                user=current_user,
+                ragione_sociale=data.get("ragione_sociale"),
+                partita_iva=data.get("partita_iva"),
+                telefono=data.get("telefono"),
+            )
+        else:
+            fornitorecrud.update_fornitore(
+                user_id=current_user.id,
+                ragione_sociale=data.get("ragione_sociale"),
+                partita_iva=data.get("partita_iva"),
+                telefono=data.get("telefono"),
+            )
 
-    return jsonify({"status": "success"})
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 
 @home_bp.route("/prodotti")

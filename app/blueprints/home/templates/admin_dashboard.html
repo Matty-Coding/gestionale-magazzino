@@ -5,45 +5,53 @@
 {% endblock %}
 
 {% block header %}
-  <div class="flex items-center h-full justify-between px-5">
+  <div class="flex items-center justify-between">
     {% include '/components/logo.html' %}
-    <h1 class="text-5xl py-2 text-center font-bold">
-      Dashboard {{ current_user.ruolo.capitalize() }}
-    </h1>
-    <a href="{{ url_for('home.admin_management') }}" 
-      class="bg-linear-to-b from-indigo-400 via-indigo-500 to-indigo-600 rounded-xl py-2 px-4 text-xl border hover:bg-linear-to-t transition-all duration-150 ease-in">
-      Effettua operazioni
-    </a>
     {% include '/components/dashboard-nav.html' %}
   </div>
 {% endblock %}
-
-{% block main %}
   
-  <div class="w-full h-full grid grid-cols-3 p-5 gap-3">
+{% block main %}
+  <div class="flex flex-col md:flex-row-reverse justify-around items-center">
+    <h1 class="text-3xl md:text-5xl xl:text-7xl py-2 text-center font-bold">
+      Dashboard {{ current_user.ruolo.capitalize() }}
+    </h1>
+    <a href="{{ url_for('home.admin_management') }}" 
+      class="bg-linear-to-b from-indigo-400 via-indigo-500 to-indigo-600 rounded-xl py-1 px-3 text-xl font-bold border hover:bg-linear-to-t transition-all duration-150 ease-in">
+      Effettua operazioni
+    </a>
+  </div>
+
+  <ul class="w-full mt-2 p-1 flex justify-around items-center gap-0.5 md:hidden">
+    <li class="bg-black/60 border p-1 rounded-lg"><a href="#tabella-registrazioni">Registrazioni</a></li>
+    <li class="bg-black/60 border p-1 rounded-lg"><a href="#tabella-utenti-ruolo">Utenti x Ruolo</a></li>
+    <li class="bg-black/60 border p-1 rounded-lg"><a href="#tabella-prodotti">In esaurimento</a></li>
+  </ul>
+
+  <div class="w-full h-full flex flex-col lg:grid lg:grid-cols-3 p-3 gap-3">
 
     <!-- ultime registrazioni -->
-    <div class="col-span-2 grid grid-rows-3 gap-3 h-full">
-      <div class="bg-black/60 rounded-t-lg border row-span-2 flex flex-col gap-2">
-        <h2 class="text-3xl text-center">Ultime registrazioni</h2>
+    <div class="col-span-2 flex flex-col justify-center lg:grid lg:grid-rows-3 gap-3 h-full overflow-x-hidden">
+      <div class="bg-black/60 rounded-t-lg border lg:row-span-2 flex flex-col gap-2">
+        <h2 class="text-xl md:text-3xl text-center">Ultime registrazioni</h2>
         
         <div class="flex-1">
-          <table class="w-full h-full">
+          <table id="tabella-registrazioni" class="w-full h-full">
             <thead>
               <tr>
-                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Username</th>
-                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Email</th>
-                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Ruolo</th>
-                <th class="bg-amber-800/70 border border-collapse font-bold text-2xl">Verificato</th>
+                <th class="bg-amber-800/70 p-2 border border-collapse font-bold text-lg md:text-2xl hidden md:table-cell">Username</th>
+                <th class="bg-amber-800/70 p-2 border border-collapse font-bold text-lg md:text-2xl">Email</th>
+                <th class="bg-amber-800/70 p-2 border border-collapse font-bold text-lg md:text-2xl hidden md:table-cell">Ruolo</th>
+                <th class="bg-amber-800/70 p-2 border border-collapse font-bold text-lg md:text-2xl">Verificato</th>
               </tr>
             </thead>
             <tbody>
               {% for utente in ultimi_utenti %}
                 <tr class="even:bg-amber-600/60 odd:bg-amber-500/60 hover:bg-rose-500/70 cursor-pointer transition-all duration-200 ease-in-out">
-                  <td class="border border-collapse text-center text-xl">{{ utente.username }}</td>
-                  <td class="border border-collapse text-center text-xl">{{ utente.email }}</td>
-                  <td class="border border-collapse text-center text-xl">{{ utente.ruolo }}</td>
-                  <td class="border border-collapse text-center text-xl">
+                  <td class="p-2 border border-collapse text-center text-xl hidden md:table-cell">{{ utente.username }}</td>
+                  <td class="p-2 border border-collapse text-center text-md md:text-xl max-w-2/3">{{ utente.email }}</td>
+                  <td class="p-2 border border-collapse text-center text-md md:text-xl hidden md:table-cell">{{ utente.ruolo }}</td>
+                  <td class="p-2 border border-collapse text-center text-md md:text-xl">
                     {% if utente.verificato %}
                       &check;
                     {% else %}
@@ -59,21 +67,21 @@
 
       <!-- conteggio utenti per ogni ruolo -->
       <div class="bg-black/60 border rounded-t-lg flex flex-col gap-2">
-        <h2 class="text-3xl text-center">Conteggio utenti per ogni ruolo</h2>
+        <h2 class="text-xl md:text-3xl text-center">Conteggio utenti</h2>
         
         <div class="flex-1">
-          <table class="w-full h-full">
+          <table id="tabella-utenti-ruolo" class="w-full h-full">
             <thead>
               <tr>
-                <th class="bg-sky-900/70 border border-collapse font-bold text-2xl">Ruolo</th>
-                <th class="bg-sky-900/70 border border-collapse font-bold text-2xl">Conteggio</th>
+                <th class="bg-sky-900/70 py-1 border border-collapse font-bold text-lg md:text-2xl">Ruolo</th>
+                <th class="bg-sky-900/70 py-1 border border-collapse font-bold text-lg md:text-2xl">Conteggio</th>
               </tr>
             </thead>
             <tbody>
               {% for ruolo, count in totale_utenti_per_ruolo %}
                 <tr class="even:bg-sky-600/60 odd:bg-sky-500/60 hover:bg-indigo-600/70 cursor-pointer transition-all duration-200 ease-in-out">
-                  <td class="text-center border border-collapse text-xl">{{ ruolo }}</td>
-                  <td class="text-center border border-collapse text-xl">{{ count }}</td>
+                  <td class="text-center border border-collapse text-md md:text-xl">{{ ruolo }}</td>
+                  <td class="text-center border border-collapse text-md md:text-xl">{{ count }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -84,23 +92,21 @@
 
     <!-- prodotti in esaurimento -->
     <div class="bg-black/60 h-full overflow-y-scroll border rounded-t-lg flex flex-col gap-2">
-      <h2 class="text-3xl text-center">In esaurimento</h2>
+      <h2 class="text-xl md:text-3xl text-center">In esaurimento</h2>
       
       <div class="flex-1">
-        <table class="w-full h-full">
+        <table id="tabella-prodotti" class="w-full h-full">
           <thead>
             <tr>
-              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Codice</th>
-              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Nome</th>
-              <th class="bg-green-800 py-3 border border-collapse text-2xl font-bold">Quantità</th>
+              <th class="bg-green-800 py-1 border border-collapse text-lg md:text-2xl font-bold">Nome</th>
+              <th class="bg-green-800 py-1 border border-collapse text-lg md:text-2xl font-bold">Quantità</th>
             </tr>
           </thead>
           <tbody>
             {% for prodotto in prodotti_in_esaurimento %}
               <tr class="even:bg-lime-500/60 odd:bg-lime-600/60 hover:bg-emerald-500/70 cursor-pointer transition-all duration-200 ease-in-out">
-                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.codice }}</td>
-                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.nome }}</td>
-                <td class="py-3 border border-collapse text-center text-xl">{{ prodotto.quantita }}</td>
+                <td class="py-3 border border-collapse text-center text-md md:text-xl">{{ prodotto.nome }}</td>
+                <td class="py-3 border border-collapse text-center text-md md:text-xl">{{ prodotto.quantita }}</td>
               </tr>
             {% endfor %}
           </tbody>

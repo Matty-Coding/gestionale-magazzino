@@ -1,20 +1,20 @@
 <table class="w-full text-left border-collapse">
-  <thead class="sticky top-0 bg-zinc-800 text-gray-400 text-sm uppercase">
+  <thead class="sticky top-0 bg-black/70 text-gray-400 text-sm uppercase">
     <tr>
-      <th class="p-4 border-b border-white/10">Codice</th>
-      <th class="p-4 border-b border-white/10">Nome</th>
-      <th class="p-4 border-b border-white/10">Prezzo</th>
-      <th class="p-4 border-b border-white/10">Quantità</th>
+      <th class="text-center p-4 border-b border-white/10 hidden md:table-cell">Codice</th>
+      <th class="text-center p-4 border-b border-white/10">Nome</th>
+      <th class="text-center p-4 border-b border-white/10 hidden md:table-cell">Prezzo</th>
+      <th class="text-center p-4 border-b border-white/10">Quantità</th>
       <th class="p-4 border-b border-white/10 text-center">Azioni</th>
     </tr>
   </thead>
   <tbody class="text-gray-300">
     {% for prodotto in items %} 
     <tr class="border-b border-white/5 hover:bg-white/5 transition-colors" data-info="{{ prodotto.codice|lower }} {{ prodotto.nome|lower }}" data-categoria="{{ prodotto.categoria_id }}">
-        <td class="p-4">{{ prodotto.codice }}</td>
-        <td class="p-4">{{ prodotto.nome }}</td>
-        <td class="p-4">{{ prodotto.prezzo }}€</td>
-        <td class="p-4">{{ prodotto.quantita }}</td>
+        <td class="p-4 hidden md:table-cell text-center">{{ prodotto.codice }}</td>
+        <td class="p-4 text-center">{{ prodotto.nome }}</td>
+        <td class="p-4 text-center hidden md:table-cell">{{ prodotto.prezzo }}€</td>
+        <td class="p-4 text-center">{{ prodotto.quantita }}</td>
         <td class="p-4 text-center space-x-3">
             
             <button class="btn-edit text-blue-400 hover:scale-110 transition-transform cursor-pointer"

@@ -22,9 +22,6 @@ class Config:
 
     PERMANENT_SESSION_LIFETIME = 3600  # 1h
 
-    SENDGRID_API_KEY = getenv("SENDGRID_API_KEY")
-    SENDGRID_FROM_EMAIL = getenv("SENDGRID_FROM_EMAIL")
-
     AUTHENTICATION_SALT = getenv("AUTHENTICATION_SALT")
     RESET_PASSWORD_SALT = getenv("RESET_PASSWORD_SALT")
 
@@ -32,7 +29,14 @@ class Config:
     STRIPE_SECRET_KEY = getenv("STRIPE_SECRET_KEY")
 
     STRIPE_WEBHOOK_SECRET = getenv("STRIPE_WEBHOOK_SECRET")
-
+    
+    MAIL_SERVER = getenv("MAIL_SERVER")
+    MAIL_PORT = int(getenv("MAIL_PORT"))
+    MAIL_USE_TLS = getenv("MAIL_USE_TLS") == "True"
+    MAIL_USERNAME = getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = getenv("MAIL_PASSWORD")
+    MAIL_SUPPRESS_SEND = getenv("MAIL_SUPPRESS_SEND") == "True"
+    MAIL_DEFAULT_SENDER = getenv("MAIL_DEFAULT_SENDER")
 
 # =========================================================
 # =============== Configurazione per sviluppo =============

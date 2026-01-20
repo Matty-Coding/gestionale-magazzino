@@ -1,4 +1,4 @@
-from app.models.database import db, Categoria, Prodotto, Fornitore, FornitoreProdotto
+from app.models.database import db, Categoria, Prodotto, Fornitore, FornitoreProdotto, User
 from decimal import Decimal
 from faker import Faker
 
@@ -9,7 +9,7 @@ def generate_fake_data():
     Genera dati fittizi e li inserisce nel database
     """
 
-    # ===================== CATEGORIE =====================
+    # ===================== CATEGORIE ====================
     nomi_categorie = ["informatica", "ufficio", "elettronica", "sconosciuto"]
     categorie = [Categoria(nome=nome) for nome in nomi_categorie]
     db.session.add_all(categorie)
@@ -33,6 +33,28 @@ def generate_fake_data():
     db.session.commit()
 
     # ===================== RELAZIONI =====================
+    for _ in range(3):
+        user = User(
+            username=fake.user_name(),
+            email=fake.email(),
+            ruolo="FORNITORE",
+            verificato=True
+        )
+
+        user.set_password(fake.password())
+
+        fornitore = Fornitore(
+            ragione_sociale=fake.random_element(["commerciale", "economica", "ambientale"]),
+            partita_iva=fake.unique.bothify(text="###########"),
+            telefono=fake.unique.phone_number(),
+            user=user
+        )
+
+        db.session.add(user)
+        db.session.add(fornitore)
+
+    db.session.commit()
+    
     fornitori = Fornitore.query.all()
 
     if not fornitori:

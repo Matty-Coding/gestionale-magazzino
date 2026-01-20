@@ -9,7 +9,7 @@ class FornitoreCRUD:
 
     @db_commiter
     def create_fornitore(
-        self, user: User, ragione_sociale: str = None, iva: str = None, tel: str = None
+        self, user: User, ragione_sociale: str = None, partita_iva: str = None, telefono: str = None
     ) -> Fornitore:
         """
         Crea un fornitore associato a un utente esistente.
@@ -20,8 +20,8 @@ class FornitoreCRUD:
 
         fornitore_obj = Fornitore(
             ragione_sociale=ragione_sociale,
-            partita_iva=iva,
-            telefono=tel,
+            partita_iva=partita_iva,
+            telefono=telefono,
             user_id=user.id,
         )
 

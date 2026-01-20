@@ -5,24 +5,37 @@ Admin | Management
 {% endblock %}
 
 {% block header %}
-<div class="flex items-center h-full justify-between">
+<div class="flex items-center h-full justify-between px-2">
+  <div class="flex items-center gap-2">
+    <button id="toggle-sidebar" class="lg:hidden text-3xl p-2 text-lime-500">
+      <i class="bi bi-list"></i>
+    </button>
 
-  <div class="h-full px-5 flex items-center text-xl font-semibold cursor-pointer hover:underline">
-    <a href="{{ url_for('home.dashboard') }}"><i class="bi bi-arrow-left mr-2"></i>Torna alla dashboard</a>
+    <div class="h-full flex items-center text-sm md:text-xl font-semibold cursor-pointer hover:underline">
+      <a href="{{ url_for('home.dashboard') }}"><i class="bi bi-arrow-left mr-1 md:mr-2"></i>Dashboard</a>
+    </div>
   </div>
 
-  <h1 class="text-5xl py-2 text-center font-bold">Pannello di amministrazione</h1>
+  <h1 class="text-xl md:text-5xl py-2 text-center font-bold">Admin</h1>
 
-  <div class="text-3xl pr-5">
+  <div class="text-lg md:text-3xl pr-5 hidden sm:block">
     {{ current_user.username }}
   </div>
 </div>
 {% endblock %}
 
 {% block main %}
-<div class="h-full grid grid-cols-4 gap-2 p-2 relative">
+<div class="h-full flex lg:grid lg:grid-cols-4 gap-2 p-2 relative">
 
-  <aside class="bg-black/70 border border-white rounded-lg overflow-y-scroll flex flex-col">
+  <aside id="admin-sidebar" 
+    class="fixed inset-y-0 left-0 z-40 w-64 transform -translate-x-full transition-transform duration-300 ease-in-out
+    lg:relative lg:translate-x-0 lg:w-auto lg:col-span-1
+    bg-black/90 lg:bg-black/70 border border-white rounded-lg overflow-y-auto flex flex-col">
+    
+    <div class="lg:hidden p-4 flex justify-end">
+      <button id="close-sidebar" class="text-white text-2xl">&times;</button>
+    </div>
+    
     <div class="filtro-prodotti">
       <h2 class="text-center border-b">FILTRI PRODOTTI</h2>
       <!-- search bar -->
@@ -102,7 +115,7 @@ Admin | Management
   </aside>
 
   <!-- main content -->
-  <section class="col-span-3 bg-black/70 border border-white 
+  <section class="w-full lg:col-span-3 bg-black/70 border border-white 
   rounded-lg overflow-hidden flex flex-col">
 
     <!-- header della sezione e tasto aggiungi -->
@@ -128,21 +141,21 @@ Admin | Management
 
       <form id="form" class="space-y-4">
         <div id="form-container"></div>
-        <div>
-          <div>
-            <button id="annulla" type="reset" class="cursor-pointer bg-red-600 hover:bg-red-500 
-            text-black px-4 py-2 rounded font-bold transition-all w-full">
-              Annulla
-            </button>
-            <button id="salva" type="submit" class="cursor-pointer bg-lime-600 hover:bg-lime-500 
-            text-black px-4 py-2 rounded font-bold transition-all w-full">
-              Salva
-            </button>
+        <div class="flex gap-5">
+          <button id="annulla" type="reset" class="cursor-pointer bg-red-500/50 hover:bg-red-500/70 
+          text-black px-4 py-2 rounded font-bold transition-all w-full">
+            Annulla
+          </button>
+          <button id="salva" type="submit" class="cursor-pointer bg-lime-500/70 hover:bg-lime-500 
+          text-black px-4 py-2 rounded font-bold transition-all w-full">
+            Salva
+          </button>
         </div>
       </form>
     </div>
   </div>
 
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
 </div>
 {% endblock %}
 

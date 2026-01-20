@@ -1,21 +1,18 @@
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-from config import Config
+from app.extensions import mail
+from flask_mail import Message
 
 
 def send_email(email: str, subject: str, message: str) -> bool:
     """Invia un email all'email con subject e message specificati."""
 
-    sg = SendGridAPIClient(api_key=Config.SENDGRID_API_KEY)
-
-    message = Mail(
-        from_email="tamati@myself.com",
-        to_emails=email,
+    msg = Message(
         subject=subject,
-        html_content=message,
+        recipients=[email],
+        html=message
     )
+
     try:
-        sg.send(message)
+        mail.send(msg)
         return True
 
     except Exception:

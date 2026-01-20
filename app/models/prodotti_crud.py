@@ -60,4 +60,4 @@ class ProdottoCrud:
         """
         Restituisce tutti i prodotti in esaurimento.
         """
-        return self.session.query(Prodotto).where(Prodotto.quantita < 20).all()
+        return self.session.query(Prodotto).where(Prodotto.quantita > 1).all()

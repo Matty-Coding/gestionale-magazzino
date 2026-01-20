@@ -5,48 +5,63 @@
 {% endblock %}
 
 {% block header %}
-  <div class="flex h-full justify-between px-5">
+  <div class="flex items-center justify-between">
     {% include '/components/logo.html' %}
-    <h1 class="text-5xl py-2 text-center font-bold">Dashboard {{ current_user.ruolo.capitalize() }}</h1>
     {% include '/components/dashboard-nav.html' %}
   </div>
-{% endblock %}
-
+  {% endblock %}
+  
 {% block main %}
-  <section class="h-10 flex bg-slate-800/40 items-center justify-evenly py-2 px-5">
-    <form id="fornitore-data" action="{{ url_for('home.update_fornitore_data') }}" method="post" novalidate>
+  <h1 
+    class="text-3xl md:text-5xl xl:text-7xl py-2 text-center font-bold">
+    Dashboard {{ current_user.ruolo.capitalize() }}
+  </h1>
+  
+  <section class="bg-black/50 p-2">
+    <form id="fornitore-data" action="{{ url_for('home.update_fornitore_data') }}" method="post" novalidate 
+      class="flex flex-col flex-wrap justify-center md:flex-row gap-5">
       {{ form.hidden_tag() }}
       
-      {{ form.partita_iva.label(class="font-semibold text-xl mr-1") }}
-      {{ form.partita_iva(class="border-b-2 w-36 text-xl border-white/70 px-3 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
-      <span>(11 Caratteri)</span>
+      <div class="text-md xl:text-2xl">
+        {{ form.partita_iva.label(class="font-semibold mr-1") }}
+        {{ form.partita_iva(class="border-b-2 w-28 xl:w-40 border-white/70 px-2 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
+        <span>(11 Caratteri)</span>
+      </div>
       
-      {{ form.telefono.label(class="font-semibold text-xl mr-1 ml-5") }}
-      {{ form.telefono(class="border-b-2 w-36 text-xl border-white/70 px-3 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
-      <span>(10 Caratteri)</span>
+      <div class="text-md xl:text-2xl">
+        {{ form.telefono.label(class="font-semibold mr-1") }}
+        {{ form.telefono(class="border-b-2 w-28 xl:w-40 border-white/70 px-2 outline-none font-mono italic placeholder:italic placeholder:text-xl focus:placeholder:text-transparent") }}
+        <span>(10 Caratteri)</span>
+      </div>
 
-      {{ form.ragione_sociale.label(class="font-semibold text-xl mr-1 ml-5") }}
-      {{ form.ragione_sociale(
-        class="border-b-2 text-xl border-white/70 italic px-2 focus:ring-2 cursor-pointer focus:ring-amber-500 focus:rounded-md [&_option]:bg-amber-500/90 [&_option]:text-black ") }}
+      <div class="text-md xl:text-2xl">
+        {{ form.ragione_sociale.label(class="font-semibold mr-1") }}
+        {{ form.ragione_sociale(
+          class="border-b-2 border-white/70 italic px-2 focus:ring-2 cursor-pointer focus:ring-amber-500 focus:rounded-md [&_option]:bg-amber-500/90 [&_option]:text-black ") }}
+      </div>
 
-      {{ form.submit(class="ml-5 font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-1 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+      <div class="w-full mr-2 flex justify-end">
+        {{ form.submit(class="font-semibold bg-linear-to-tr from-amber-800 via-amber-700 to-amber-500 border rounded-xl py-1 px-4 hover:scale-105 hover:cursor-pointer hover:bg-linear-to-bl transition-all duration-100 ease-in") }}
+      </div>
     </form>
   </section>
 
-  <h2 class="text-xl">Totale pezzi <span>{{ totale_pezzi }}</span></h2>
-  <h2 class="text-xl">Totale prodotti <span>{{ totale_prodotti }}</span></h2>
+  <div class="flex justify-center items-center gap-2 my-5 text-xl xl:text-3xl xl:gap-5">
+    <p><span class="font-bold">Totale pezzi:</span> {{ totale_pezzi }}</p>
+    <p><span class="font-bold">Totale prodotti:</span> {{ totale_prodotti }}</p>
+  </div>
 
-  <div class="grid grid-cols-4 gap-2 p-7">
+  <div class="grid grid-cols-2 xl:grid-cols-4 gap-2 p-3 h-[calc(100dvh-400px)] overflow-y-scroll">
     {% for prodotto in prodotti %}
       <article 
-        class="bg-black/60 rounded-lg border border-white 
-        flex flex-col gap-2 
+        class="bg-black/50 rounded-lg border border-white 
+        flex flex-col gap-1 
         cursor-pointer 
         hover:bg-lime-500/30 hover:scale-95 transition-all duration-200 ease-in">
-        <h2 class="text-center text-2xl font-bold">{{ prodotto.prodotto.nome }}</h2>
-        <p class="px-4"><span class="font-semibold">Codice:  </span>{{ prodotto.prodotto.codice }}</p>
-        <p class="px-4"><span class="font-semibold">Quantità:  </span>{{ prodotto.prodotto.quantita }} disponibili</p>
-        <p class="px-4 pb-4"><span class="font-semibold">Prezzo:  </span>{{ prodotto.prodotto.prezzo }}€</p>
+        <h2 class="text-center text-xl font-bold">{{ prodotto.prodotto.nome }}</h2>
+        <p class="text-md px-2"><span class="font-semibold">Codice:  </span>{{ prodotto.prodotto.codice }}</p>
+        <p class="text-md px-2"><span class="font-semibold">Quantità:  </span>{{ prodotto.prodotto.quantita }}</p>
+        <p class="text-md px-2 pb-4"><span class="font-semibold">Prezzo:  </span>{{ prodotto.prodotto.prezzo }}€</p>
       </article>
     {% endfor %}
   </div>

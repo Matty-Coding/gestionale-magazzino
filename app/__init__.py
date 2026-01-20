@@ -1,6 +1,6 @@
 from flask import Flask
 from config import DevConfig, ProdConfig, BASE_DIR
-from app.extensions import db, login_manager, session, csrf, talisman, limiter, migrate
+from app.extensions import db, login_manager, session, csrf, talisman, limiter, migrate, mail
 from app.middleware.limit import MiddleWare
 from app.models.database import User
 from dotenv import load_dotenv
@@ -36,8 +36,9 @@ def create_app():
     login_manager.init_app(app)
     session.init_app(app)
     csrf.init_app(app)
-    # limiter.init_app(app)
+    limiter.init_app(app)
     talisman.init_app(app)
+    mail.init_app(app)
 
     # ===================
     # == LoginManager ===

@@ -6,6 +6,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalTitle = document.getElementById("modal-title");
     const nomeTabella = document.getElementById("nome-tabella");
 
+    // logica sidebar a scomparsa (mobile)
+    const sidebar = document.getElementById("admin-sidebar");
+    const toggleBtn = document.getElementById("toggle-sidebar");
+    const closeBtn = document.getElementById("close-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+
+    function toggleSidebar() {
+        sidebar.classList.toggle("-translate-x-full");
+        overlay.classList.toggle("hidden");
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener("click", toggleSidebar);
+    if (closeBtn) closeBtn.addEventListener("click", toggleSidebar);
+    if (overlay) overlay.addEventListener("click", toggleSidebar);
+
+
     // variabili globali per dinamicità totale
     let currentEndpoint = "";
     let currentResourceType = "";
