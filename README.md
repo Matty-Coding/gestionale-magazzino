@@ -3,7 +3,7 @@
 Applicazione web per la gestione di un magazzino, sviluppata come progetto reale su contratto.
 
 ## Features
-- gestione utenti e ruoli
+- gestione utenti e ruoli (sezione admin inclusa)
 - gestione prodotti e magazzino
 - interfaccia web per utilizzo operativo
 - autenticazione e controllo accessi
